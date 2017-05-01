@@ -40,5 +40,12 @@ namespace ATK
       levelSlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
     }
     
+    void VolumeFilterComponent::sliderValueChanged(::juce::Slider* slider)
+    {
+      if(slider == &levelSlider)
+      {
+        filter.set_volume_db(slider->getValue());
+      }
+    }
   }
 }
