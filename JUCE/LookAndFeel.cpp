@@ -34,24 +34,12 @@ namespace ATK
         else
           g.setColour (::juce::Colour (0x80808080));
         
-        const float thickness = 2.7f;
+        const float thickness = .5f;
         
         {
           ::juce::Path filledArc;
           filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
           g.fillPath (filledArc);
-        }
-        
-        {
-          const float innerRadius = radius * 0.2f;
-          ::juce::Path p;
-          p.addTriangle (-innerRadius, 0.0f,
-                         0.0f, -radius * thickness * 1.1f,
-                         innerRadius, 0.0f);
-          
-          p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
-          
-          g.fillPath (p, ::juce::AffineTransform::rotation (angle).translated (centreX, centreY));
         }
         
         if (slider.isEnabled())
