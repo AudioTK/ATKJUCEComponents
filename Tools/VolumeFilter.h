@@ -22,7 +22,10 @@ namespace ATK
       ~VolumeFilterComponent();
       
       //==============================================================================
+      void paint(::juce::Graphics&) override;
       void resized() override;
+
+      void set_color(::juce::Colour color);
       
     private:
       // This reference is provided as a quick way for your editor to
@@ -31,6 +34,7 @@ namespace ATK
       
       ::juce::Slider levelSlider;
       ::juce::Label levelLabel;
+      ::juce::Colour color;
       
       JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeFilterComponent)
     };
