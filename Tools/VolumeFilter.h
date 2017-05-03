@@ -15,7 +15,7 @@ namespace ATK
 {
   namespace juce
   {
-    class VolumeFilterComponent  : public ::juce::Component
+    class VolumeFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
     {
     public:
       VolumeFilterComponent(VolumeFilter<double>& filter, ::juce::String display, double min, double max, double default_);
@@ -24,8 +24,10 @@ namespace ATK
       //==============================================================================
       void paint(::juce::Graphics&) override;
       void resized() override;
-
       void set_color(::juce::Colour color);
+    
+    protected:
+      void sliderValueChanged (::juce::Slider* slider) override final;
       
     private:
       // This reference is provided as a quick way for your editor to
