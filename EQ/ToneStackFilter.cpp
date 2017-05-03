@@ -62,10 +62,10 @@ namespace ATK
     {
       lowLabel.setBounds(0, 10, 200, 20);
       lowSlider.setBounds(20, 40, 160, 140);
-      mediumLabel.setBounds(200, 10, 400, 20);
-      mediumSlider.setBounds(220, 40, 360, 140);
-      highLabel.setBounds(400, 10, 600, 20);
-      highSlider.setBounds(420, 40, 560, 140);
+      mediumLabel.setBounds(200, 10, 200, 20);
+      mediumSlider.setBounds(220, 40, 160, 140);
+      highLabel.setBounds(400, 10, 200, 20);
+      highSlider.setBounds(420, 40, 160, 140);
     }
     
     void ToneStackFilterComponent::sliderValueChanged(::juce::Slider* slider)
