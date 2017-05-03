@@ -19,6 +19,7 @@ namespace ATK
       levelSlider.setTextValueSuffix (" dB");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      levelSlider.addListener (this);
       
       addAndMakeVisible(levelLabel);
       levelLabel.setText(display, ::juce::NotificationType::dontSendNotification);

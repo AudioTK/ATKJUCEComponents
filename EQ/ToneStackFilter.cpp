@@ -22,16 +22,19 @@ namespace ATK
       lowSlider.setValue(0.5);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      highSlider.addListener (this);
       addAndMakeVisible(mediumSlider);
       mediumSlider.setRange (0, 1);
       mediumSlider.setValue(0.5);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      highSlider.addListener (this);
       addAndMakeVisible(highSlider);
       highSlider.setRange (0, 1);
       highSlider.setValue(0.5);
       highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
       highSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      highSlider.addListener (this);
       
       addAndMakeVisible(lowLabel);
       lowLabel.setText("low", ::juce::NotificationType::dontSendNotification);
