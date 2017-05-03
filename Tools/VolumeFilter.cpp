@@ -11,7 +11,7 @@ namespace ATK
   namespace juce
   {
     VolumeFilterComponent::VolumeFilterComponent (VolumeFilter<double>& filter, ::juce::String display, double min, double max, double default_)
-    : filter (filter), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colours::deepskyblue)
+    : filter (filter), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(26, 26, 26))
     {
       addAndMakeVisible(levelSlider);
       levelSlider.setRange (min, max);
@@ -36,7 +36,8 @@ namespace ATK
     
     void VolumeFilterComponent::paint(::juce::Graphics& g)
     {
-      g.fillAll(color);
+      g.setColour(color);
+      g.fillRoundedRectangle(5, 5, getWidth() - 10, getHeight() - 10, 10);
     }
 
     void VolumeFilterComponent::resized()
