@@ -17,7 +17,6 @@ namespace ATK
       levelSlider.setRange (min, max);
       levelSlider.setValue(default_);
       levelSlider.setTextValueSuffix (" dB");
-      levelSlider.setColour(::juce::Slider::thumbColourId, ::juce::Colour::fromFloatRGBA(1, 1, 1, 0));
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       
