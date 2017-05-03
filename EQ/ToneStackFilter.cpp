@@ -15,22 +15,22 @@ namespace ATK
       lowSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       mediumSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       highSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
-      color(::juce::Colour(26, 26, 26))
+      color(::juce::Colour(46, 46, 46))
     {
       addAndMakeVisible(lowSlider);
       lowSlider.setRange (0, 1);
       lowSlider.setValue(0.5);
-      lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
+      lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       addAndMakeVisible(mediumSlider);
       mediumSlider.setRange (0, 1);
       mediumSlider.setValue(0.5);
-      mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
+      mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       addAndMakeVisible(highSlider);
       highSlider.setRange (0, 1);
       highSlider.setValue(0.5);
-      highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
+      highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
       highSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       
       addAndMakeVisible(lowLabel);
