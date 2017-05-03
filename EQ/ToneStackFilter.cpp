@@ -37,10 +37,10 @@ namespace ATK
       lowLabel.setText("low", ::juce::NotificationType::dontSendNotification);
       lowLabel.setJustificationType(::juce::Justification::centred);
       addAndMakeVisible(mediumLabel);
-      mediumLabel.setText("low", ::juce::NotificationType::dontSendNotification);
+      mediumLabel.setText("middle", ::juce::NotificationType::dontSendNotification);
       mediumLabel.setJustificationType(::juce::Justification::centred);
       addAndMakeVisible(highLabel);
-      highLabel.setText("low", ::juce::NotificationType::dontSendNotification);
+      highLabel.setText("high", ::juce::NotificationType::dontSendNotification);
       highLabel.setJustificationType(::juce::Justification::centred);
       
       // Make sure that before the constructor has finished, you've set the
