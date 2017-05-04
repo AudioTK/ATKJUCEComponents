@@ -8,6 +8,7 @@
 #include <AppConfig.h>
 
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 #include <ATK/EQ/IIRFilter.h>
 #include <ATK/EQ/ToneStackFilter.h>
@@ -19,7 +20,7 @@ namespace ATK
     class ToneStackFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
     {
     public:
-      ToneStackFilterComponent(ATK::IIRFilter<ATK::ToneStackCoefficients<double> >& filter);
+      ToneStackFilterComponent(::juce::AudioParameterFloat* bass, ::juce::AudioParameterFloat* medium, ::juce::AudioParameterFloat* high);
       ~ToneStackFilterComponent();
       
       //==============================================================================
@@ -33,7 +34,9 @@ namespace ATK
     private:
       // This reference is provided as a quick way for your editor to
       // access the processor object that created it.
-      ATK::IIRFilter<ATK::ToneStackCoefficients<double> >& filter;
+      ::juce::AudioParameterFloat* bass;
+      ::juce::AudioParameterFloat* medium;
+      ::juce::AudioParameterFloat* high;
       
       ::juce::Slider lowSlider;
       ::juce::Label lowLabel;

@@ -10,8 +10,8 @@ namespace ATK
 {
   namespace juce
   {
-    ToneStackFilterComponent::ToneStackFilterComponent (ATK::IIRFilter<ATK::ToneStackCoefficients<double> >& filter)
-    : filter (filter),
+    ToneStackFilterComponent::ToneStackFilterComponent(::juce::AudioParameterFloat* bass, ::juce::AudioParameterFloat* medium, ::juce::AudioParameterFloat* high)
+    : bass(bass), medium(medium), high(high),
       lowSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       mediumSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       highSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
@@ -45,7 +45,7 @@ namespace ATK
       addAndMakeVisible(highLabel);
       highLabel.setText("high", ::juce::NotificationType::dontSendNotification);
       highLabel.setJustificationType(::juce::Justification::centred);
-      
+    
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
       setSize (600, 200);
@@ -75,15 +75,15 @@ namespace ATK
     {
       if(slider == &lowSlider)
       {
-        filter.set_low(slider->getValue());
+        *bass = slider->getValue();
       }
       else if(slider == &mediumSlider)
       {
-        filter.set_middle(slider->getValue());
+        *medium = slider->getValue();
       }
       else if(slider == &highSlider)
       {
-        filter.set_high(slider->getValue());
+        *high = slider->getValue();
       }
     }
   }

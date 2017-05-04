@@ -10,8 +10,8 @@ namespace ATK
 {
   namespace juce
   {
-    VolumeFilterComponent::VolumeFilterComponent (VolumeFilter<double>& filter, ::juce::String display, double min, double max, double default_)
-    : filter (filter), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
+    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioParameterFloat* volume, ::juce::String display, double min, double max, double default_)
+    : volume(volume), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
     {
       addAndMakeVisible(levelSlider);
       levelSlider.setRange (min, max);
@@ -50,7 +50,7 @@ namespace ATK
     {
       if(slider == &levelSlider)
       {
-        filter.set_volume_db(slider->getValue());
+        *volume = slider->getValue();
       }
     }
   }

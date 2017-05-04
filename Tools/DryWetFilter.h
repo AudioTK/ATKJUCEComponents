@@ -1,26 +1,26 @@
 /**
- * \file VolumeFilter.h
+ * \file DryWetFilter.h
  */
 
-#ifndef ATKJUCECOMPONENTS_TOOLS_VOLUMEFILTER
-#define ATKJUCECOMPONENTS_TOOLS_VOLUMEFILTER
+#ifndef ATKJUCECOMPONENTS_TOOLS_DRYWETFILTER
+#define ATKJUCECOMPONENTS_TOOLS_DRYWETFILTER
 
 #include <AppConfig.h>
 
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#include <ATK/Tools/VolumeFilter.h>
+#include <ATK/Tools/DryWetFilter.h>
 
 namespace ATK
 {
   namespace juce
   {
-    class VolumeFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
+    class DryWetFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
     {
     public:
-      VolumeFilterComponent(::juce::AudioParameterFloat* volume, ::juce::String display, double min, double max, double default_);
-      ~VolumeFilterComponent();
+      DryWetFilterComponent(::juce::AudioParameterFloat* drywet);
+      ~DryWetFilterComponent();
       
       //==============================================================================
       void paint(::juce::Graphics&) override;
@@ -33,13 +33,13 @@ namespace ATK
     private:
       // This reference is provided as a quick way for your editor to
       // access the processor object that created it.
-      ::juce::AudioParameterFloat* volume;
+      ::juce::AudioParameterFloat* drywet;
       
       ::juce::Slider levelSlider;
       ::juce::Label levelLabel;
       ::juce::Colour color;
       
-      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeFilterComponent)
+      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DryWetFilterComponent)
     };    
   }
 }
