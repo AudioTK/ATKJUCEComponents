@@ -18,20 +18,20 @@ namespace ATK
       color(::juce::Colour(46, 46, 46))
     {
       addAndMakeVisible(lowSlider);
-      lowSlider.setRange (0, 1);
-      lowSlider.setValue(0.5);
+      lowSlider.setRange(-1, 1);
+      lowSlider.setValue(0);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
       addAndMakeVisible(mediumSlider);
-      mediumSlider.setRange (0, 1);
-      mediumSlider.setValue(0.5);
+      mediumSlider.setRange(-1, 1);
+      mediumSlider.setValue(0);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
       addAndMakeVisible(highSlider);
-      highSlider.setRange (0, 1);
-      highSlider.setValue(0.5);
+      highSlider.setRange(-1, 1);
+      highSlider.setValue(0);
       highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
       highSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
