@@ -22,13 +22,13 @@ namespace ATK
       lowSlider.setValue(0);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
-      highSlider.addListener (this);
+      lowSlider.addListener (this);
       addAndMakeVisible(mediumSlider);
       mediumSlider.setRange(-1, 1);
       mediumSlider.setValue(0);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
-      highSlider.addListener (this);
+      mediumSlider.addListener (this);
       addAndMakeVisible(highSlider);
       highSlider.setRange(-1, 1);
       highSlider.setValue(0);
