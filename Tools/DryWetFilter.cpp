@@ -27,7 +27,7 @@ namespace ATK
       
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
-      setSize (200, 200);
+      setSize (150, 150);
     }
     
     DryWetFilterComponent::~DryWetFilterComponent()

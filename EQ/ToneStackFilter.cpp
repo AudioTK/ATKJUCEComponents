@@ -48,7 +48,7 @@ namespace ATK
     
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
-      setSize (600, 200);
+      setSize (450, 150);
     }
     
     ToneStackFilterComponent::~ToneStackFilterComponent()
@@ -63,12 +63,12 @@ namespace ATK
     
     void ToneStackFilterComponent::resized()
     {
-      lowLabel.setBounds(0, 10, 200, 20);
-      lowSlider.setBounds(20, 40, 160, 140);
-      mediumLabel.setBounds(200, 10, 200, 20);
-      mediumSlider.setBounds(220, 40, 160, 140);
-      highLabel.setBounds(400, 10, 200, 20);
-      highSlider.setBounds(420, 40, 160, 140);
+      lowLabel.setBoundsRelative(0, .05, 1. / 3, .1);
+      lowSlider.setBoundsRelative(.1 / 3, .2, 4. / 15, .7);
+      mediumLabel.setBoundsRelative(1. / 3, .05, 1. / 3, .1);
+      mediumSlider.setBoundsRelative(1.1 / 3, .2, 4. / 15, .7);
+      highLabel.setBoundsRelative(2. / 3, .05, 1. / 3, .1);
+      highSlider.setBoundsRelative(2.1 / 3, .2, 4. / 15, .7);
     }
     
     void ToneStackFilterComponent::sliderValueChanged(::juce::Slider* slider)
