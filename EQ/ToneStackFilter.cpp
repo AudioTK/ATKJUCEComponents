@@ -21,29 +21,29 @@ namespace ATK
       lowSlider.setRange(-1, 1);
       lowSlider.setValue(0);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
-      lowSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      lowSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
       addAndMakeVisible(mediumSlider);
       mediumSlider.setRange(-1, 1);
       mediumSlider.setValue(0);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
-      mediumSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      mediumSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
       addAndMakeVisible(highSlider);
       highSlider.setRange(-1, 1);
       highSlider.setValue(0);
       highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
-      highSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+      highSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       highSlider.addListener (this);
       
       addAndMakeVisible(lowLabel);
-      lowLabel.setText("low", ::juce::NotificationType::dontSendNotification);
+      lowLabel.setText("Low", ::juce::NotificationType::dontSendNotification);
       lowLabel.setJustificationType(::juce::Justification::centred);
       addAndMakeVisible(mediumLabel);
-      mediumLabel.setText("middle", ::juce::NotificationType::dontSendNotification);
+      mediumLabel.setText("Middle", ::juce::NotificationType::dontSendNotification);
       mediumLabel.setJustificationType(::juce::Justification::centred);
       addAndMakeVisible(highLabel);
-      highLabel.setText("high", ::juce::NotificationType::dontSendNotification);
+      highLabel.setText("High", ::juce::NotificationType::dontSendNotification);
       highLabel.setJustificationType(::juce::Justification::centred);
     
       // Make sure that before the constructor has finished, you've set the
