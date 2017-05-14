@@ -16,7 +16,7 @@ namespace ATK
 {
   namespace juce
   {
-    class FFTViewerComponent  : public ::juce::OpenGLAppComponent
+    class FFTViewerComponent  : public ::juce::OpenGLAppComponent, public ::juce::Timer
     {
     public:
       FFTViewerComponent();
@@ -29,6 +29,8 @@ namespace ATK
     
       void initialise() override;
       void shutdown() override;
+      
+      void timerCallback() override;
       
     protected:
       
