@@ -23,7 +23,7 @@ namespace ATK
       // editor's size to whatever you need it to be.
       setSize (400, 300);
 
-      startTimer (200);  // redraw every 200ms
+      startTimer (100);  // redraw every 100ms
     }
     
     FFTViewerComponent::~FFTViewerComponent()
@@ -46,13 +46,23 @@ namespace ATK
     
     void FFTViewerComponent::render()
     {
+      double min = 0;
+      double max = 1;
       const auto& data = interface->get_last_slice();
+
       if(data.size() > 0)
       {
         fft.set_size(data.size());
         fft.process(data.data(), data.size());
         fft.get_amp(amp_data);
+        for(auto& data: amp_data)
+        {
+          data = 20 * std::log(data);
+        }
+        min = *std::min_element(amp_data.begin(), amp_data.end());
+        max = *std::max_element(amp_data.begin(), amp_data.end());
       }
+      
       
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
@@ -68,12 +78,11 @@ namespace ATK
       glLoadIdentity();
       glOrtho(-ratio, ratio, -1, 1, 1, -1);
       
-      glLineWidth(10);
-      glBegin(GL_LINE_SMOOTH);
+      glBegin(GL_LINES);
       glColor3f(1.0, 0.0, 0.0);
       for(std::size_t i = 0; i < amp_data.size(); ++i)
       {
-        glVertex3f(i / (amp_data.size() - 1.f), (-20 * std::log(amp_data[i])) / 60 + 1, 0);
+        glVertex3f(2 * i / (amp_data.size() - 1.f) - 1, 2 * (amp_data[i] - min) / (max - min) - 1, 0);
       }
       
       glEnd();
