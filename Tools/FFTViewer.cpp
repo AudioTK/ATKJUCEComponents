@@ -5,12 +5,14 @@
 #include <OpenGL/gl.h>
 
 #include "FFTViewer.h"
+#include "FFTViewerInterface.h"
 
 namespace ATK
 {
   namespace juce
   {
-    FFTViewerComponent::FFTViewerComponent ()
+    FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface)
+    :interface(interface)
     {
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
@@ -39,7 +41,13 @@ namespace ATK
     
     void FFTViewerComponent::render()
     {
-      jassert (OpenGLHelpers::isContextActive());
+      const auto& data = interface->get_last_slice();
+      if(data.size() > 0)
+      {
+        fft.set_size(data.size());
+        fft.process(data.data(), data.size());
+        fft.get_amp(amp_data);
+      }
       
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
@@ -56,13 +64,13 @@ namespace ATK
       glOrtho(-ratio, ratio, -1, 1, 1, -1);
       
       glLineWidth(10);
-      glBegin(GL_LINE_LOOP);
+      glBegin(GL_LINE_SMOOTH);
       glColor3f(1.0, 0.0, 0.0);
-      glVertex3f(-1, -.5, 0);
-      glColor3f(0.0, 1.0, 0.0);
-      glVertex3f(1, -.5, 0);
-      glColor3f(0.0, 0.0, 1.0);
-      glVertex3f(0, .5, 0);
+      for(std::size_t i = 0; i < amp_data.size(); ++i)
+      {
+        glVertex3f(i / (amp_data.size() - 1.f), (-20 * std::log(amp_data[i])) / 60 + 1, 0);
+      }
+      
       glEnd();
     }
     

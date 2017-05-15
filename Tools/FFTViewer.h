@@ -11,15 +11,17 @@
 #include <juce_opengl/juce_opengl.h>
 
 #include <ATK/Tools/DryWetFilter.h>
+#include <ATK/Utility/FFT.h>
 
 namespace ATK
 {
   namespace juce
   {
+    class FFTViewerInterface;
     class FFTViewerComponent  : public ::juce::OpenGLAppComponent, public ::juce::Timer
     {
     public:
-      FFTViewerComponent();
+      FFTViewerComponent(FFTViewerInterface* interface);
       ~FFTViewerComponent();
       
       //==============================================================================
@@ -35,6 +37,9 @@ namespace ATK
     protected:
       
     private:
+      FFTViewerInterface* interface;
+      FFT<double> fft;
+      std::vector<double> amp_data;
     };
   }
 }
