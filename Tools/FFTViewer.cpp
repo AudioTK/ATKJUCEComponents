@@ -2,7 +2,10 @@
  * \file FFTViewer.cpp
  */
 
-#include <OpenGL/gl.h>
+#ifdef WIN32
+  #include <windows.h>
+#endif
+#include <gl/gl.h>
 
 #include "FFTViewer.h"
 
@@ -39,8 +42,6 @@ namespace ATK
     
     void FFTViewerComponent::render()
     {
-      jassert (OpenGLHelpers::isContextActive());
-      
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
 
