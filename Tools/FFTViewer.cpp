@@ -23,7 +23,7 @@ namespace ATK
       // editor's size to whatever you need it to be.
       setSize (400, 300);
 
-      startTimer (100);  // redraw every 100ms
+      startTimer(100);  // redraw every 100ms
     }
     
     FFTViewerComponent::~FFTViewerComponent()
@@ -46,23 +46,27 @@ namespace ATK
     
     void FFTViewerComponent::render()
     {
-      double min = 0;
-      double max = 1;
-      const auto& data = interface->get_last_slice();
+      bool process = true;
+      const auto& data = interface->get_last_slice(process);
 
-      if(data.size() > 0)
+      if(process && data.size() > 0)
       {
         fft.set_size(data.size());
         fft.process(data.data(), data.size());
         fft.get_amp(amp_data);
-        for(auto& data: amp_data)
+        if(amp_data_previous.size() != amp_data.size())
         {
-          data = 20 * std::log(data);
+          amp_data_previous = amp_data;
+          amp_data_log.resize(amp_data_previous.size());
         }
-        min = *std::min_element(amp_data.begin(), amp_data.end());
-        max = *std::max_element(amp_data.begin(), amp_data.end());
+        for(std::size_t i = 0; i < amp_data.size(); ++i)
+        {
+          amp_data_log[i] = 20 * std::log(std::max(amp_data[i], 0.99 * amp_data_previous[i])); // need to use sampling rate
+        }
+        
+        min = *std::min_element(amp_data_log.begin(), amp_data_log.end());
+        max = *std::max_element(amp_data_log.begin(), amp_data_log.end());
       }
-      
       
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
@@ -80,11 +84,10 @@ namespace ATK
       
       glBegin(GL_LINES);
       glColor3f(1.0, 0.0, 0.0);
-      for(std::size_t i = 0; i < amp_data.size(); ++i)
+      for(std::size_t i = 0; i < amp_data_log.size(); ++i)
       {
-        glVertex3f(2 * i / (amp_data.size() - 1.f) - 1, 2 * (amp_data[i] - min) / (max - min) - 1, 0);
+        glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[i] - min) / (max - min + 1e-10) - 1, 0);
       }
-      
       glEnd();
     }
     

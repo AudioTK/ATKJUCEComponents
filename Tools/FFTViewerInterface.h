@@ -16,7 +16,7 @@ namespace ATK
       virtual ~FFTViewerInterface(){}
       
       virtual int get_sampling_rate() const = 0;
-      virtual const std::vector<double>& get_last_slice() = 0;
+      virtual const std::vector<double>& get_last_slice(bool& process) = 0;
       
     };
   }
