@@ -2,7 +2,12 @@
  * \file FFTViewer.cpp
  */
 
-#include <OpenGL/gl.h>
+#ifdef WIN32
+  #include <windows.h>
+  #include <gl/gl.h>
+#else
+  #include <OpenGL/gl.h>
+#endif
 
 #include "FFTViewer.h"
 #include "FFTViewerInterface.h"
