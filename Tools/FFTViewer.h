@@ -37,9 +37,6 @@ namespace ATK
     protected:
       
     private:
-      double min = 0;
-      double max = 1;
-
       FFTViewerInterface* interface_;
       FFT<double> fft;
       std::vector<double> amp_data;

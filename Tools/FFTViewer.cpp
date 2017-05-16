@@ -12,6 +12,12 @@
 #include "FFTViewer.h"
 #include "FFTViewerInterface.h"
 
+namespace
+{
+  const double min_value = -120;
+  const double max_value = 20;
+}
+
 namespace ATK
 {
   namespace juce
@@ -63,9 +69,6 @@ namespace ATK
         {
           amp_data_log[i] = 20 * std::log(std::max(amp_data[i], 0.99 * amp_data_previous[i])); // need to use sampling rate
         }
-        
-        min = *std::min_element(amp_data_log.begin(), amp_data_log.end());
-        max = *std::max_element(amp_data_log.begin(), amp_data_log.end());
       }
       
       const float desktopScale = (float) openGLContext.getRenderingScale();
@@ -86,7 +89,7 @@ namespace ATK
       glColor3f(1.0, 0.0, 0.0);
       for(std::size_t i = 0; i < amp_data_log.size(); ++i)
       {
-        glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[i] - min) / (max - min + 1e-10) - 1, 0);
+        glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
       }
       glEnd();
     }
