@@ -54,6 +54,7 @@ namespace ATK
     {
       bool process = true;
       const auto& data = interface_->get_last_slice(process);
+      double memory_rate = std::exp(-0.3 * data.size() / interface_->get_sampling_rate());
 
       if(process && data.size() > 0)
       {
@@ -67,7 +68,7 @@ namespace ATK
         }
         for(std::size_t i = 0; i < amp_data.size(); ++i)
         {
-          amp_data_log[i] = 20 * std::log(std::max(amp_data[i], 0.99 * amp_data_previous[i])); // need to use sampling rate
+          amp_data_log[i] = 20 * std::log(std::max(amp_data[i], memory_rate * amp_data_previous[i])); // need to use sampling rate
         }
       }
       
