@@ -14,7 +14,7 @@
 
 namespace
 {
-  const double min_value = -120;
+  const double min_value = -380;
   const double max_value = 20;
 }
 
@@ -54,7 +54,7 @@ namespace ATK
     {
       bool process = true;
       const auto& data = interface_->get_last_slice(process);
-      double memory_rate = std::exp(-0.3 * data.size() / interface_->get_sampling_rate());
+      double memory_rate = std::exp(-0.3 * data.size() / interface_->get_sampling_rate()); // 300ms release time
 
       if(process && data.size() > 0)
       {
@@ -68,7 +68,8 @@ namespace ATK
         }
         for(std::size_t i = 0; i < amp_data.size(); ++i)
         {
-          amp_data_log[i] = 20 * std::log(std::max(amp_data[i], memory_rate * amp_data_previous[i])); // need to use sampling rate
+          amp_data_previous[i] = std::max(amp_data[i], memory_rate * amp_data_previous[i]);
+          amp_data_log[i] = 20 * std::log(amp_data_previous[i]);
         }
       }
       
