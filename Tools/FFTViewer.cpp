@@ -16,8 +16,8 @@ namespace ATK
 {
   namespace juce
   {
-    FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface)
-    :interface(interface)
+    FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface_)
+    :interface_(interface_)
     {
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
@@ -47,7 +47,7 @@ namespace ATK
     void FFTViewerComponent::render()
     {
       bool process = true;
-      const auto& data = interface->get_last_slice(process);
+      const auto& data = interface_->get_last_slice(process);
 
       if(process && data.size() > 0)
       {

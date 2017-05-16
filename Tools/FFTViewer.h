@@ -21,7 +21,7 @@ namespace ATK
     class FFTViewerComponent  : public ::juce::OpenGLAppComponent, public ::juce::Timer
     {
     public:
-      FFTViewerComponent(FFTViewerInterface* interface);
+      FFTViewerComponent(FFTViewerInterface* interface_);
       ~FFTViewerComponent();
       
       //==============================================================================
@@ -40,7 +40,7 @@ namespace ATK
       double min = 0;
       double max = 1;
 
-      FFTViewerInterface* interface;
+      FFTViewerInterface* interface_;
       FFT<double> fft;
       std::vector<double> amp_data;
       std::vector<double> amp_data_previous;
