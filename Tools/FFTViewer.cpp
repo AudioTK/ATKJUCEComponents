@@ -14,7 +14,7 @@
 
 namespace
 {
-  const double min_value = -380;
+  const double min_value = -180;
   const double max_value = 20;
 }
 
@@ -27,7 +27,7 @@ namespace ATK
     {
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
-      setSize (400, 300);
+      setSize (800, 600);
 
       startTimer(100);  // redraw every 100ms
     }
@@ -54,12 +54,14 @@ namespace ATK
     {
       bool process = true;
       const auto& data = interface_->get_last_slice(process);
-      double memory_rate = std::exp(-0.3 * data.size() / interface_->get_sampling_rate()); // 300ms release time
+      auto sampling_rate = interface_->get_sampling_rate();
+      auto slice_size = data.size();
+      double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
 
       if(process && data.size() > 0)
       {
-        fft.set_size(data.size());
-        fft.process(data.data(), data.size());
+        fft.set_size(slice_size);
+        fft.process(data.data(), slice_size);
         fft.get_amp(amp_data);
         if(amp_data_previous.size() != amp_data.size())
         {
@@ -69,7 +71,7 @@ namespace ATK
         for(std::size_t i = 0; i < amp_data.size(); ++i)
         {
           amp_data_previous[i] = std::max(amp_data[i], memory_rate * amp_data_previous[i]);
-          amp_data_log[i] = 20 * std::log(amp_data_previous[i]);
+          amp_data_log[i] = 10 * std::log(amp_data_previous[i]); // amp_data is power
         }
       }
       
@@ -87,9 +89,15 @@ namespace ATK
       glLoadIdentity();
       glOrtho(-ratio, ratio, -1, 1, 1, -1);
       
+      if(amp_data_log.empty())
+        return;
+      
+      auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
+      auto last_index = std::lround(20000. * slice_size / sampling_rate);
+      
       glBegin(GL_LINES);
       glColor3f(1.0, 0.0, 0.0);
-      for(std::size_t i = 0; i < amp_data_log.size(); ++i)
+      for(std::size_t i = first_index; i < last_index; ++i)
       {
         glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
       }
