@@ -17,10 +17,10 @@ namespace ATK
 {
   namespace juce
   {
-    class ToneStackFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
+    class ToneStackFilterComponent  : public ::juce::Component
     {
     public:
-      ToneStackFilterComponent(::juce::AudioParameterFloat* bass, ::juce::AudioParameterFloat* medium, ::juce::AudioParameterFloat* high);
+      ToneStackFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& bass, const std::string& medium, const std::string& high);
       ~ToneStackFilterComponent();
       
       //==============================================================================
@@ -28,16 +28,9 @@ namespace ATK
       void resized() override;
       void set_color(::juce::Colour color);
       
-    protected:
-      void sliderValueChanged (::juce::Slider* slider) override final;
-      
     private:
       // This reference is provided as a quick way for your editor to
       // access the processor object that created it.
-      ::juce::AudioParameterFloat* bass;
-      ::juce::AudioParameterFloat* medium;
-      ::juce::AudioParameterFloat* high;
-      
       ::juce::Slider lowSlider;
       ::juce::Label lowLabel;
       ::juce::Slider mediumSlider;
@@ -45,6 +38,10 @@ namespace ATK
       ::juce::Slider highSlider;
       ::juce::Label highLabel;
       ::juce::Colour color;
+      
+      std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> bassAtt;
+      std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> mediumAtt;
+      std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> highAtt;
       
       JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ToneStackFilterComponent)
     };

@@ -10,16 +10,16 @@ namespace ATK
 {
   namespace juce
   {
-    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioParameterFloat* volume, ::juce::String display, double min, double max, double default_)
-    : volume(volume), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
+    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max, double default_)
+    : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
     {
       addAndMakeVisible(levelSlider);
+      volumeAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, levelSlider));
       levelSlider.setRange (min, max);
       levelSlider.setValue(default_);
       levelSlider.setTextValueSuffix (" dB");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
-      levelSlider.addListener (this);
       
       addAndMakeVisible(levelLabel);
       levelLabel.setText(display, ::juce::NotificationType::dontSendNotification);
@@ -44,14 +44,6 @@ namespace ATK
     {
       levelLabel.setBoundsRelative(0.3, 0.05, 0.4, 0.1);
       levelSlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
-    }
-    
-    void VolumeFilterComponent::sliderValueChanged(::juce::Slider* slider)
-    {
-      if(slider == &levelSlider)
-      {
-        *volume = slider->getValue();
-      }
     }
   }
 }

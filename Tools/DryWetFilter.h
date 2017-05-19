@@ -16,31 +16,26 @@ namespace ATK
 {
   namespace juce
   {
-    class DryWetFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
+    class DryWetFilterComponent  : public ::juce::Component
     {
     public:
-      DryWetFilterComponent(::juce::AudioParameterFloat* drywet);
+      DryWetFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name);
       ~DryWetFilterComponent();
       
       //==============================================================================
       void paint(::juce::Graphics&) override;
       void resized() override;
       void set_color(::juce::Colour color);
-    
-    protected:
-      void sliderValueChanged (::juce::Slider* slider) override final;
       
     private:
-      // This reference is provided as a quick way for your editor to
-      // access the processor object that created it.
-      ::juce::AudioParameterFloat* drywet;
-      
       ::juce::Slider levelSlider;
       ::juce::Label levelLabel;
       ::juce::Colour color;
       
+      std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> drywetAtt;
+
       JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DryWetFilterComponent)
-    };    
+    };
   }
 }
 

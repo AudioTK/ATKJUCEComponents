@@ -10,31 +10,30 @@ namespace ATK
 {
   namespace juce
   {
-    ToneStackFilterComponent::ToneStackFilterComponent(::juce::AudioParameterFloat* bass, ::juce::AudioParameterFloat* medium, ::juce::AudioParameterFloat* high)
-    : bass(bass), medium(medium), high(high),
-      lowSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
+    ToneStackFilterComponent::ToneStackFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& bass, const std::string& medium, const std::string& high)
+    : lowSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       mediumSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       highSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       color(::juce::Colour(46, 46, 46))
     {
       addAndMakeVisible(lowSlider);
+      bassAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, bass, lowSlider));
       lowSlider.setRange(-1, 1);
       lowSlider.setValue(0);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
-      lowSlider.addListener (this);
       addAndMakeVisible(mediumSlider);
+      mediumAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, medium, mediumSlider));
       mediumSlider.setRange(-1, 1);
       mediumSlider.setValue(0);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
-      mediumSlider.addListener (this);
       addAndMakeVisible(highSlider);
+      highAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, high, highSlider));
       highSlider.setRange(-1, 1);
       highSlider.setValue(0);
       highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
       highSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
-      highSlider.addListener (this);
       
       addAndMakeVisible(lowLabel);
       lowLabel.setText("Low", ::juce::NotificationType::dontSendNotification);
@@ -69,22 +68,6 @@ namespace ATK
       mediumSlider.setBoundsRelative(1.1 / 3, .2, 4. / 15, .7);
       highLabel.setBoundsRelative(2. / 3, .05, 1. / 3, .1);
       highSlider.setBoundsRelative(2.1 / 3, .2, 4. / 15, .7);
-    }
-    
-    void ToneStackFilterComponent::sliderValueChanged(::juce::Slider* slider)
-    {
-      if(slider == &lowSlider)
-      {
-        *bass = slider->getValue();
-      }
-      else if(slider == &mediumSlider)
-      {
-        *medium = slider->getValue();
-      }
-      else if(slider == &highSlider)
-      {
-        *high = slider->getValue();
-      }
     }
   }
 }

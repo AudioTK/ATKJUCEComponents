@@ -10,16 +10,16 @@ namespace ATK
 {
   namespace juce
   {
-    DryWetFilterComponent::DryWetFilterComponent (::juce::AudioParameterFloat* drywet)
-    : drywet(drywet), levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(46, 46, 46))
+    DryWetFilterComponent::DryWetFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name)
+    : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(46, 46, 46))
     {
       addAndMakeVisible(levelSlider);
+      drywetAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, levelSlider));
       levelSlider.setRange (0, 100);
       levelSlider.setValue(100);
       levelSlider.setTextValueSuffix (" %");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::aqua);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
-      levelSlider.addListener (this);
       
       addAndMakeVisible(levelLabel);
       levelLabel.setText("Dry/Wet", ::juce::NotificationType::dontSendNotification);
@@ -44,14 +44,6 @@ namespace ATK
     {
       levelLabel.setBoundsRelative(0.3, 0.05, 0.4, 0.1);
       levelSlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
-    }
-    
-    void DryWetFilterComponent::sliderValueChanged(::juce::Slider* slider)
-    {
-      if(slider == &levelSlider)
-      {
-        *drywet = slider->getValue();
-      }
     }
   }
 }

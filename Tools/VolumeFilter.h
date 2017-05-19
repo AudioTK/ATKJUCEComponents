@@ -16,28 +16,23 @@ namespace ATK
 {
   namespace juce
   {
-    class VolumeFilterComponent  : public ::juce::Component, public ::juce::Slider::Listener
+    class VolumeFilterComponent  : public ::juce::Component
     {
     public:
-      VolumeFilterComponent(::juce::AudioParameterFloat* volume, ::juce::String display, double min, double max, double default_);
+      VolumeFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max, double default_);
       ~VolumeFilterComponent();
       
       //==============================================================================
       void paint(::juce::Graphics&) override;
       void resized() override;
       void set_color(::juce::Colour color);
-    
-    protected:
-      void sliderValueChanged (::juce::Slider* slider) override final;
       
     private:
-      // This reference is provided as a quick way for your editor to
-      // access the processor object that created it.
-      ::juce::AudioParameterFloat* volume;
-      
       ::juce::Slider levelSlider;
       ::juce::Label levelLabel;
       ::juce::Colour color;
+      
+      std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> volumeAtt;
       
       JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VolumeFilterComponent)
     };    
