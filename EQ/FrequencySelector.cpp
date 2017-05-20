@@ -18,7 +18,7 @@ namespace ATK
       frequencySlider.setRange (min, max);
       frequencySlider.setValue(default_);
       frequencySlider.setTextValueSuffix (" Hz");
-      frequencySlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
+      frequencySlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::lightyellow);
       frequencySlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       
       addAndMakeVisible(frequencyLabel);
@@ -42,7 +42,7 @@ namespace ATK
 
     void FrequencySelectorComponent::resized()
     {
-      frequencyLabel.setBoundsRelative(0.3, 0.05, 0.4, 0.1);
+      frequencyLabel.setBoundsRelative(0.1, 0.05, 0.8, 0.1);
       frequencySlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
     }
   }
