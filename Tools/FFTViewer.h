@@ -39,9 +39,9 @@ namespace ATK
     private:
       FFTViewerInterface* interface_;
       FFT<double> fft;
-      std::vector<double> amp_data;
-      std::vector<double> amp_data_previous;
-      std::vector<double> amp_data_log;
+      std::vector<std::vector<double>> amp_data;
+      std::vector<std::vector<double>> amp_data_previous;
+      std::vector<std::vector<double>> amp_data_log;
     };
   }
 }

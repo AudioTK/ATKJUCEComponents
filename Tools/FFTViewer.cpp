@@ -23,7 +23,7 @@ namespace ATK
   namespace juce
   {
     FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface_)
-    :interface_(interface_)
+    :interface_(interface_), amp_data(interface_->get_nb_channels()), amp_data_previous(interface_->get_nb_channels()), amp_data_log(interface_->get_nb_channels())
     {
       // Make sure that before the constructor has finished, you've set the
       // editor's size to whatever you need it to be.
@@ -52,29 +52,6 @@ namespace ATK
     
     void FFTViewerComponent::render()
     {
-      bool process = true;
-      const auto& data = interface_->get_last_slice(process);
-      auto sampling_rate = interface_->get_sampling_rate();
-      auto slice_size = data.size();
-      double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
-
-      if(process && data.size() > 0)
-      {
-        fft.set_size(slice_size);
-        fft.process(data.data(), slice_size);
-        fft.get_amp(amp_data);
-        if(amp_data_previous.size() != amp_data.size())
-        {
-          amp_data_previous = amp_data;
-          amp_data_log.resize(amp_data_previous.size());
-        }
-        for(std::size_t i = 0; i < amp_data.size(); ++i)
-        {
-          amp_data_previous[i] = std::max(amp_data[i], memory_rate * amp_data_previous[i]);
-          amp_data_log[i] = 10 * std::log(amp_data_previous[i]); // amp_data is power
-        }
-      }
-      
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
 
@@ -89,19 +66,45 @@ namespace ATK
       glLoadIdentity();
       glOrtho(-ratio, ratio, -1, 1, 1, -1);
       
-      if(amp_data_log.empty())
-        return;
-      
-      auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
-      auto last_index = std::lround(20000. * slice_size / sampling_rate);
-      
-      glBegin(GL_LINES);
-      glColor3f(1.0, 0.0, 0.0);
-      for(std::size_t i = first_index; i < last_index; ++i)
+      for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
-        glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
+        bool process = true;
+        const auto& data = interface_->get_last_slice(index, process);
+        auto sampling_rate = interface_->get_sampling_rate();
+        auto slice_size = data.size();
+        double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
+        
+        if(process && data.size() > 0)
+        {
+          fft.set_size(slice_size);
+          fft.process(data.data(), slice_size);
+          fft.get_amp(amp_data[index]);
+          if(amp_data_previous[index].size() != amp_data[index].size())
+          {
+            amp_data_previous[index] = amp_data[index];
+            amp_data_log[index].resize(amp_data_previous[index].size());
+          }
+          for(std::size_t i = 0; i < amp_data[index].size(); ++i)
+          {
+            amp_data_previous[index][i] = std::max(amp_data[index][i], memory_rate * amp_data_previous[index][i]);
+            amp_data_log[index][i] = 10 * std::log(amp_data_previous[index][i]); // amp_data is power
+          }
+        }
+        
+        if(amp_data_log.empty())
+          return;
+        
+        auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
+        auto last_index = std::lround(20000. * slice_size / sampling_rate);
+        
+        glBegin(GL_LINES);
+        glColor3f(1.0, 0.0, 0.0);
+        for(std::size_t i = first_index; i < last_index; ++i)
+        {
+          glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
+        }
+        glEnd();
       }
-      glEnd();
     }
     
     void FFTViewerComponent::initialise()
