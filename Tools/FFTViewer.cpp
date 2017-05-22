@@ -9,6 +9,8 @@
   #include <OpenGL/gl.h>
 #endif
 
+#include <array>
+
 #include "FFTViewer.h"
 #include "FFTViewerInterface.h"
 
@@ -16,6 +18,8 @@ namespace
 {
   const double min_value = -180;
   const double max_value = 20;
+  
+  const std::array<float, 6> colors{{1, 0, 0, 0, 1, 0}};
 }
 
 namespace ATK
@@ -91,17 +95,17 @@ namespace ATK
           }
         }
         
-        if(amp_data_log.empty())
+        if(amp_data_log[index].empty())
           return;
         
         auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
         auto last_index = std::lround(20000. * slice_size / sampling_rate);
         
         glBegin(GL_LINES);
-        glColor3f(1.0, 0.0, 0.0);
+        glColor3f(colors[3*index], colors[3*index+1], colors[3*index+2]);
         for(std::size_t i = first_index; i < last_index; ++i)
         {
-          glVertex3f(2 * i / (amp_data_log.size() - 1.f) - 1, 2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
+          glVertex3f(2 * i / (amp_data_log[index].size() - 1.f) - 1, 2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
         }
         glEnd();
       }
