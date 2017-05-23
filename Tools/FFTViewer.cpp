@@ -16,10 +16,10 @@
 
 namespace
 {
-  const double min_value = -180;
-  const double max_value = 20;
+  const double min_value = -200;
+  const double max_value = 0;
   
-  const std::array<float, 6> colors{{1, 0, 0, 0, 1, 0}};
+  const std::array<float, 6> colors{{0, 1, 0, 1, 0, 0}};
 }
 
 namespace ATK
@@ -102,10 +102,10 @@ namespace ATK
         auto last_index = std::lround(20000. * slice_size / sampling_rate);
         
         glBegin(GL_LINES);
-        glColor3f(colors[3*index], colors[3*index+1], colors[3*index+2]);
+        glColor4f(colors[3*index], colors[3*index+1], colors[3*index+2], 0.5);
         for(std::size_t i = first_index; i < last_index; ++i)
         {
-          glVertex3f(2 * i / (amp_data_log[index].size() - 1.f) - 1, 2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
+          glVertex3f(ratio * (2 * i / (last_index - first_index - 1.f) - 1), 2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1, 0);
         }
         glEnd();
       }
