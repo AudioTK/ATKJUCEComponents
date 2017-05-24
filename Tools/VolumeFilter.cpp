@@ -10,7 +10,7 @@ namespace ATK
 {
   namespace juce
   {
-    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max, double default_)
+    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max)
     : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
     {
       addAndMakeVisible(levelSlider);
