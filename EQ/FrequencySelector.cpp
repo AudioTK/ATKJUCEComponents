@@ -16,6 +16,7 @@ namespace ATK
       addAndMakeVisible(frequencySlider);
       frequencyAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, frequencySlider));
       frequencySlider.setRange (min, max);
+      frequencySlider.setSkewFactor(0.5);
       frequencySlider.setTextValueSuffix (" Hz");
       frequencySlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::lightyellow);
       frequencySlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
