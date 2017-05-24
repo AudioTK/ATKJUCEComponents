@@ -10,13 +10,12 @@ namespace ATK
 {
   namespace juce
   {
-    FrequencySelectorComponent::FrequencySelectorComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max, double default_)
+    FrequencySelectorComponent::FrequencySelectorComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max)
     : frequencySlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
     {
       addAndMakeVisible(frequencySlider);
       frequencyAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, frequencySlider));
       frequencySlider.setRange (min, max);
-      frequencySlider.setValue(default_);
       frequencySlider.setTextValueSuffix (" Hz");
       frequencySlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::lightyellow);
       frequencySlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());

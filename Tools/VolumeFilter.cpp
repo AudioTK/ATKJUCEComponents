@@ -16,7 +16,6 @@ namespace ATK
       addAndMakeVisible(levelSlider);
       volumeAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, levelSlider));
       levelSlider.setRange (min, max);
-      levelSlider.setValue(default_);
       levelSlider.setTextValueSuffix (" dB");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());

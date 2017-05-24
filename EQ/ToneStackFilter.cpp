@@ -19,19 +19,16 @@ namespace ATK
       addAndMakeVisible(lowSlider);
       bassAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, bass, lowSlider));
       lowSlider.setRange(-1, 1);
-      lowSlider.setValue(0);
       lowSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::mediumpurple);
       lowSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       addAndMakeVisible(mediumSlider);
       mediumAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, medium, mediumSlider));
       mediumSlider.setRange(-1, 1);
-      mediumSlider.setValue(0);
       mediumSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkviolet);
       mediumSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       addAndMakeVisible(highSlider);
       highAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, high, highSlider));
       highSlider.setRange(-1, 1);
-      highSlider.setValue(0);
       highSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::purple);
       highSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
       

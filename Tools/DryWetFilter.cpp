@@ -16,7 +16,6 @@ namespace ATK
       addAndMakeVisible(levelSlider);
       drywetAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, levelSlider));
       levelSlider.setRange (0, 100);
-      levelSlider.setValue(100);
       levelSlider.setTextValueSuffix (" %");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::aqua);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
