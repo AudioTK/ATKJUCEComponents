@@ -16,7 +16,7 @@ namespace ATK
       addAndMakeVisible(attackSlider);
       attackAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, attackName, attackSlider));
       attackSlider.setRange (0, 1000);
-      attackSlider.setValue(10);
+      attackSlider.setSkewFactor(0.3);
       attackSlider.setTextValueSuffix (" ms");
       attackSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::rosybrown);
       attackSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
@@ -28,7 +28,7 @@ namespace ATK
       addAndMakeVisible(releaseSlider);
       releaseAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, releaseName, releaseSlider));
       releaseSlider.setRange (0, 1000);
-      releaseSlider.setValue(10);
+      releaseSlider.setSkewFactor(0.3);
       releaseSlider.setTextValueSuffix (" ms");
       releaseSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::skyblue);
       releaseSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
