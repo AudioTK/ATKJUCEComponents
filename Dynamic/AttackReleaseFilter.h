@@ -19,7 +19,7 @@ namespace ATK
     class AttackReleaseFilterComponent  : public ::juce::Component
     {
     public:
-      AttackReleaseFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& attackName, const std::string& releaseName);
+      AttackReleaseFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& attackName, double attackMin, double attackMax, const std::string& releaseName, double releaseMin, double releaseMax);
       ~AttackReleaseFilterComponent();
       
       //==============================================================================

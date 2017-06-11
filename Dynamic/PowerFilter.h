@@ -19,7 +19,7 @@ namespace ATK
     class PowerFilterComponent  : public ::juce::Component
     {
     public:
-      PowerFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& powerName);
+      PowerFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& powerName, double powerMin, double powerMax);
       ~PowerFilterComponent();
       
       //==============================================================================
