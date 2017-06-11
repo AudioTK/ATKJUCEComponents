@@ -41,7 +41,7 @@ namespace ATK
 
     void VolumeFilterComponent::resized()
     {
-      levelLabel.setBoundsRelative(0.3, 0.05, 0.4, 0.1);
+      levelLabel.setBoundsRelative(0, 0.05, 1, 0.1);
       levelSlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
     }
   }
