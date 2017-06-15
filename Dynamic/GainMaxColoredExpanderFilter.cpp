@@ -72,7 +72,7 @@ namespace ATK
       qualityLabel.setJustificationType(::juce::Justification::centred);
       
       addAndMakeVisible(reducSlider);
-      reducAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, qualityName, reducSlider));
+      reducAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, reducName, reducSlider));
       reducSlider.setRange(reducMin, reducMax);
       reducSlider.setTextValueSuffix(" dB");
       reducSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::gold);
