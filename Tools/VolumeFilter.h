@@ -19,7 +19,7 @@ namespace ATK
     class VolumeFilterComponent  : public ::juce::Component
     {
     public:
-      VolumeFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max);
+      VolumeFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display);
       ~VolumeFilterComponent();
       
       //==============================================================================

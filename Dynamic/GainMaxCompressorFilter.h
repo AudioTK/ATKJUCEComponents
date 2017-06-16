@@ -19,7 +19,7 @@ namespace ATK
     class GainMaxCompressorFilterComponent  : public ::juce::Component
     {
     public:
-      GainMaxCompressorFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, double thresholdMin, double thresholdMax, const std::string& ratioName, double ratioMin, double ratioMax, const std::string& softnessName, const std::string& reducName, double reducMin, double reducMax);
+      GainMaxCompressorFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, const std::string& ratioName, const std::string& softnessName, const std::string& reducName);
       ~GainMaxCompressorFilterComponent();
       
       //==============================================================================

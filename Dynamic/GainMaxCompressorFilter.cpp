@@ -10,12 +10,11 @@ namespace ATK
 {
   namespace juce
   {
-    GainMaxCompressorFilterComponent::GainMaxCompressorFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, double thresholdMin, double thresholdMax, const std::string& ratioName, double ratioMin, double ratioMax, const std::string& softnessName, const std::string& reducName, double reducMin, double reducMax)
+    GainMaxCompressorFilterComponent::GainMaxCompressorFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, const std::string& ratioName, const std::string& softnessName, const std::string& reducName)
     : thresholdSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), ratioSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), softnessSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), reducSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(16, 16, 16))
     {
       addAndMakeVisible(thresholdSlider);
       thresholdAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, thresholdName, thresholdSlider));
-      thresholdSlider.setRange (thresholdMin, thresholdMax);
       thresholdSlider.setTextValueSuffix (" dB");
       thresholdSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::palegoldenrod);
       thresholdSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
@@ -26,8 +25,6 @@ namespace ATK
 
       addAndMakeVisible(ratioSlider);
       ratioAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, ratioName, ratioSlider));
-      ratioSlider.setRange(ratioMin, ratioMax);
-      ratioSlider.setSkewFactor(0.3);
       ratioSlider.setTextValueSuffix ("/1");
       ratioSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::goldenrod);
       ratioSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
@@ -38,8 +35,6 @@ namespace ATK
 
       addAndMakeVisible(softnessSlider);
       softnessAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, softnessName, softnessSlider));
-      softnessSlider.setRange(0.1, 10);
-      softnessSlider.setSkewFactor(0.3);
       softnessSlider.setTextValueSuffix ("");
       softnessSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::darkgoldenrod);
       softnessSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
@@ -51,7 +46,6 @@ namespace ATK
       
       addAndMakeVisible(reducSlider);
       reducAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, reducName, reducSlider));
-      reducSlider.setRange(reducMin, reducMax);
       reducSlider.setTextValueSuffix(" dB");
       reducSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::gold);
       reducSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());

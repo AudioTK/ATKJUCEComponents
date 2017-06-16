@@ -10,13 +10,11 @@ namespace ATK
 {
   namespace juce
   {
-    PowerFilterComponent::PowerFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& powerName, double powerMin, double powerMax)
+    PowerFilterComponent::PowerFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& powerName)
     : powerSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(16, 16, 16))
     {
       addAndMakeVisible(powerSlider);
       powerAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, powerName, powerSlider));
-      powerSlider.setRange (powerMin, powerMax);
-      powerSlider.setSkewFactor(0.3);
       powerSlider.setTextValueSuffix (" ms");
       powerSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::rosybrown);
       powerSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());

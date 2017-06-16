@@ -19,7 +19,7 @@ namespace ATK
     class FrequencySelectorComponent  : public ::juce::Component
     {
     public:
-      FrequencySelectorComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max);
+      FrequencySelectorComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display);
       ~FrequencySelectorComponent();
       
       //==============================================================================

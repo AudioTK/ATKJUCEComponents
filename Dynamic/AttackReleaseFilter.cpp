@@ -10,13 +10,11 @@ namespace ATK
 {
   namespace juce
   {
-    AttackReleaseFilterComponent::AttackReleaseFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& attackName, double attackMin, double attackMax, const std::string& releaseName, double releaseMin, double releaseMax)
+    AttackReleaseFilterComponent::AttackReleaseFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& attackName, const std::string& releaseName)
     : attackSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), releaseSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(56, 56, 56))
     {
       addAndMakeVisible(attackSlider);
       attackAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, attackName, attackSlider));
-      attackSlider.setRange (attackMin, attackMax);
-      attackSlider.setSkewFactor(0.3);
       attackSlider.setTextValueSuffix (" ms");
       attackSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::rosybrown);
       attackSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
@@ -27,8 +25,6 @@ namespace ATK
 
       addAndMakeVisible(releaseSlider);
       releaseAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, releaseName, releaseSlider));
-      releaseSlider.setRange (releaseMin, releaseMax);
-      releaseSlider.setSkewFactor(0.3);
       releaseSlider.setTextValueSuffix (" ms");
       releaseSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::skyblue);
       releaseSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());

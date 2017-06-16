@@ -19,7 +19,7 @@ namespace ATK
     class GainColoredCompressorFilterComponent  : public ::juce::Component
     {
     public:
-      GainColoredCompressorFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, double thresholdMin, double thresholdMax, const std::string& ratioName, double ratioMin, double ratioMax, const std::string& softnessName, double softnessMin, double softnessMax, const std::string& colorName, double colorMin, double colorMax, const std::string& qualityName, double qualityMin, double qualityMax);
+      GainColoredCompressorFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& thresholdName, const std::string& ratioName, const std::string& softnessName, const std::string& colorName, const std::string& qualityName);
       ~GainColoredCompressorFilterComponent();
       
       //==============================================================================

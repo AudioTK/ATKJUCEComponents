@@ -10,12 +10,11 @@ namespace ATK
 {
   namespace juce
   {
-    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display, double min, double max)
+    VolumeFilterComponent::VolumeFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display)
     : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(36, 36, 36))
     {
       addAndMakeVisible(levelSlider);
       volumeAtt.reset( new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, name, levelSlider));
-      levelSlider.setRange (min, max);
       levelSlider.setTextValueSuffix (" dB");
       levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
