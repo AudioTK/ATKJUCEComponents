@@ -33,7 +33,6 @@ namespace ATK
     
       void initialise() override;
       void shutdown() override;
-      
     protected:
       
       void buildShaders();
@@ -45,10 +44,14 @@ namespace ATK
       std::vector<std::vector<double>> amp_data_previous;
       std::vector<std::vector<double>> amp_data_log;
       
-      glm::mat4x4 projectionMatrix;
-      glm::mat4x4 viewMatrix;
+      std::vector<float> display_data;
+      
+      glm::mat4x4 MVP;
+      GLuint matrixID;
+      GLuint vertexArrayID;
       
       std::unique_ptr<::juce::OpenGLShaderProgram> shader;
+      std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;
     };
   }
 }

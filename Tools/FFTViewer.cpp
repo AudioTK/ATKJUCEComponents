@@ -13,8 +13,6 @@ namespace
 {
   const double min_value = -200;
   const double max_value = 0;
-  
-  const std::array<float, 6> colors{{0, 1, 0, 1, 0, 0}};
 }
 
 namespace ATK
@@ -42,20 +40,19 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
-      projectionMatrix = glm::ortho(0.0f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), 0.0f, 0.1f, 100.0f);
-      viewMatrix = glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      auto ratio = static_cast<float>(getWidth()) / getHeight();
+      MVP = glm::ortho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     }
     
     void FFTViewerComponent::render()
     {
       const float desktopScale = (float) openGLContext.getRenderingScale();
-      ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
+      ::juce::OpenGLHelpers::clear(getLookAndFeel().findColour(::juce::ResizableWindow::backgroundColourId));
 
-      glEnable (GL_BLEND);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      auto ratio = static_cast<float>(getWidth()) / getHeight();
       glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
+      
+      glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
+      auto ratio = static_cast<float>(getWidth()) / getHeight();
       
       for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
@@ -80,22 +77,38 @@ namespace ATK
             amp_data_previous[index][i] = std::max(amp_data[index][i], memory_rate * amp_data_previous[index][i]);
             amp_data_log[index][i] = 10 * std::log(amp_data_previous[index][i]); // amp_data is power
           }
+          
+          auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
+          auto last_index = std::lround(20000. * slice_size / sampling_rate);
+          display_data.resize((last_index - first_index + 1) * 3);
+          
+          for(auto i = first_index; i <= last_index; ++i)
+          {
+            auto local_id = i - first_index;
+            display_data[local_id * 3] = ratio * (2 * i / (last_index - first_index - 1.f) - 1);
+            display_data[local_id * 3 + 1] = (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1);
+            display_data[local_id * 3 + 2] = index;
+          }
         }
         
         if(amp_data_log[index].empty())
           return;
         
-        auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
-        auto last_index = std::lround(20000. * slice_size / sampling_rate);
+        openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
+                                               static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)),
+                                               display_data.data(), GL_STATIC_DRAW);
+        openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
         
-        /*glBegin(GL_LINES);
-        glColor4f(colors[3*index], colors[3*index+1], colors[3*index+2], 0.5);
-        for(std::size_t i = first_index; i < last_index; ++i)
-        {
-          glVertex3f(ratio * (2 * i / (last_index - first_index - 1.f) - 1), (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1), 0);
-        }
-        glEnd();*/
+        openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        openGLContext.extensions.glEnableVertexAttribArray (position->attributeID);
+        
+        glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
+        
+        shader->use();
+        
+        openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
       }
+      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
     
     void FFTViewerComponent::initialise()
@@ -105,31 +118,26 @@ namespace ATK
 
     void FFTViewerComponent::shutdown()
     {
+      openGLContext.extensions.glDeleteBuffers (1, &vertexArrayID);
     }
     
     void FFTViewerComponent::buildShaders()
     {
       std::string vertexShader =
-      "attribute vec4 position;\n"
-      "attribute vec4 sourceColour;\n"
-      "attribute vec2 texureCoordIn;\n"
+      "#version 120\n"
+      "attribute vec3 position;\n"
       "\n"
-      "uniform mat4 projectionMatrix;\n"
-      "uniform mat4 viewMatrix;\n"
-      "\n"
-      "varying vec4 destinationColour;\n"
-      "varying vec2 textureCoordOut;\n"
+      "uniform mat4 MVP;\n"
       "\n"
       "void main()\n"
       "{\n"
-      "    destinationColour = sourceColour;\n"
-      "    textureCoordOut = texureCoordIn;\n"
-      "    gl_Position = projectionMatrix * viewMatrix * position;\n"
+      "    vec4 pos;\n"
+      "    pos.xyz = position;\n"
+      "    pos.w = 1;\n"
+      "    gl_Position = MVP * pos;\n"
       "}\n";
       
       std::string fragmentShader =
-      "varying vec4 destinationColour;\n"
-      "varying vec2 textureCoordOut;\n"
       "\n"
       "void main()\n"
       "{\n"
@@ -153,6 +161,15 @@ namespace ATK
       {
         statusText = newShader->getLastError();
       }
+      
+      matrixID = glGetUniformLocation(shader->getProgramID(), "MVP");
+      position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
+      
+      openGLContext.extensions.glGenBuffers (1, &vertexArrayID);
+      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
+      
+      //glGenVertexArrays(1, &vertexArrayID);
+      //glBindVertexArray(vertexArrayID);
     }
   }
 }
