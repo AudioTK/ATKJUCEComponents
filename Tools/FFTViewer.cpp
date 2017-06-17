@@ -2,12 +2,7 @@
  * \file FFTViewer.cpp
  */
 
-#ifdef WIN32
-  #include <windows.h>
-  #include <gl/gl.h>
-#else
-  #include <OpenGL/gl.h>
-#endif
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <array>
 
@@ -29,11 +24,6 @@ namespace ATK
     FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface_)
     :interface_(interface_), amp_data(interface_->get_nb_channels()), amp_data_previous(interface_->get_nb_channels()), amp_data_log(interface_->get_nb_channels())
     {
-      // Make sure that before the constructor has finished, you've set the
-      // editor's size to whatever you need it to be.
-      setSize (800, 600);
-
-      startTimer(100);  // redraw every 100ms
     }
     
     FFTViewerComponent::~FFTViewerComponent()
@@ -52,6 +42,8 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
+      projectionMatrix = glm::ortho(0.0f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), 0.0f, 0.1f, 100.0f);
+      viewMatrix = glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     }
     
     void FFTViewerComponent::render()
@@ -59,16 +51,11 @@ namespace ATK
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear (getLookAndFeel().findColour (::juce::ResizableWindow::backgroundColourId));
 
-      glEnable(GL_POINT_SMOOTH);
       glEnable (GL_BLEND);
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       auto ratio = static_cast<float>(getWidth()) / getHeight();
       glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      glOrtho(-ratio, ratio, -1, 1, 1, -1);
       
       for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
@@ -101,27 +88,71 @@ namespace ATK
         auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
         auto last_index = std::lround(20000. * slice_size / sampling_rate);
         
-        glBegin(GL_LINES);
+        /*glBegin(GL_LINES);
         glColor4f(colors[3*index], colors[3*index+1], colors[3*index+2], 0.5);
         for(std::size_t i = first_index; i < last_index; ++i)
         {
           glVertex3f(ratio * (2 * i / (last_index - first_index - 1.f) - 1), (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1), 0);
         }
-        glEnd();
+        glEnd();*/
       }
     }
     
     void FFTViewerComponent::initialise()
     {
+      buildShaders();
     }
 
     void FFTViewerComponent::shutdown()
     {
     }
-
-    void FFTViewerComponent::timerCallback()
+    
+    void FFTViewerComponent::buildShaders()
     {
-      repaint();
+      std::string vertexShader =
+      "attribute vec4 position;\n"
+      "attribute vec4 sourceColour;\n"
+      "attribute vec2 texureCoordIn;\n"
+      "\n"
+      "uniform mat4 projectionMatrix;\n"
+      "uniform mat4 viewMatrix;\n"
+      "\n"
+      "varying vec4 destinationColour;\n"
+      "varying vec2 textureCoordOut;\n"
+      "\n"
+      "void main()\n"
+      "{\n"
+      "    destinationColour = sourceColour;\n"
+      "    textureCoordOut = texureCoordIn;\n"
+      "    gl_Position = projectionMatrix * viewMatrix * position;\n"
+      "}\n";
+      
+      std::string fragmentShader =
+      "varying vec4 destinationColour;\n"
+      "varying vec2 textureCoordOut;\n"
+      "\n"
+      "void main()\n"
+      "{\n"
+      "    vec4 colour = vec4(0.95, 0.57, 0.03, 0.7);\n"
+      "    gl_FragColor = colour;\n"
+      "}\n";
+      
+      std::unique_ptr<::juce::OpenGLShaderProgram> newShader(new ::juce::OpenGLShaderProgram (openGLContext));
+      ::juce::String statusText;
+      
+      if (newShader->addVertexShader(::juce::OpenGLHelpers::translateVertexShaderToV3(vertexShader))
+          && newShader->addFragmentShader(::juce::OpenGLHelpers::translateFragmentShaderToV3(fragmentShader))
+          && newShader->link())
+      {
+        shader = std::move(newShader);
+        shader->use();
+        
+        statusText = "GLSL: v" + ::juce::String(::juce::OpenGLShaderProgram::getLanguageVersion(), 2);
+      }
+      else
+      {
+        statusText = newShader->getLastError();
+      }
     }
   }
 }

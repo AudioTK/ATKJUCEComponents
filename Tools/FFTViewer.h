@@ -13,12 +13,14 @@
 #include <ATK/Tools/DryWetFilter.h>
 #include <ATK/Utility/FFT.h>
 
+#include <glm/glm.hpp>
+
 namespace ATK
 {
   namespace juce
   {
     class FFTViewerInterface;
-    class FFTViewerComponent  : public ::juce::OpenGLAppComponent, public ::juce::Timer
+    class FFTViewerComponent  : public ::juce::OpenGLAppComponent
     {
     public:
       FFTViewerComponent(FFTViewerInterface* interface_);
@@ -32,9 +34,9 @@ namespace ATK
       void initialise() override;
       void shutdown() override;
       
-      void timerCallback() override;
-      
     protected:
+      
+      void buildShaders();
       
     private:
       FFTViewerInterface* interface_;
@@ -42,6 +44,11 @@ namespace ATK
       std::vector<std::vector<double>> amp_data;
       std::vector<std::vector<double>> amp_data_previous;
       std::vector<std::vector<double>> amp_data_log;
+      
+      glm::mat4x4 projectionMatrix;
+      glm::mat4x4 viewMatrix;
+      
+      std::unique_ptr<::juce::OpenGLShaderProgram> shader;
     };
   }
 }
