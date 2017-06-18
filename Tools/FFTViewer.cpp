@@ -111,7 +111,7 @@ namespace ATK
         openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
         openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
         
-        glDrawElements (GL_LINE_STRIP, (display_data.size()) / 3 - 1, GL_UNSIGNED_INT, 0);
+        glDrawArrays (GL_LINE_STRIP, 0, (display_data.size()) / 3 - 1);
         
         openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
       }
