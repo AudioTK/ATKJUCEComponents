@@ -49,7 +49,7 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
-      transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.f, -10.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 10.f, -10.f) *glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     }
     
     void FFTViewerComponent::render()
@@ -63,18 +63,18 @@ namespace ATK
       glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
       shader->use();
 
-      MVP->setMatrix4(&transformationMatrix[0][0], 1, true);
+      MVP->setMatrix4(&transformationMatrix[0][0], 1, GL_FALSE);
 
-      /*for(std::size_t index = 0; index < amp_data.size(); ++index)
+      for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
         bool process = true;
         const auto& data = interface_->get_last_slice(index, process);
         auto sampling_rate = interface_->get_sampling_rate();
         auto slice_size = data.size();
-        double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
         
-        if(process && data.size() > 0)
+        if((sampling_rate != 0) && process && (data.size() > 0))
         {
+          double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
           fft.set_size(slice_size);
           fft.process(data.data(), slice_size);
           fft.get_amp(amp_data[index]);
@@ -98,11 +98,11 @@ namespace ATK
             auto local_id = i - first_index;
             display_data[local_id * 3] = (2 * i / (last_index - first_index - 1.f) - 1);
             display_data[local_id * 3 + 1] = (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1);
-            display_data[local_id * 3 + 2] = -index;
+            display_data[local_id * 3 + 2] = index;
           }
         }
         
-        if(amp_data_log[index].empty())
+        if(display_data.size() == 0)
           return;
 
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
@@ -111,12 +111,10 @@ namespace ATK
         openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
         openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
         
-        glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
+        glDrawElements (GL_LINE_STRIP, (display_data.size()) / 3 - 1, GL_UNSIGNED_INT, 0);
         
         openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
       }
-      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);*/
-
       GLfloat verts[]
       {
         -1.0f, -1.0f, 0.0f,
@@ -124,26 +122,7 @@ namespace ATK
         0.0f,  1.0f, 0.0f
       };
 
-      // An ID for your buffer
-      GLuint bufferID;
-
-      // Get the ID
-      openGLContext.extensions.glGenBuffers(1, &bufferID);
-
-      // Configure the buffer
-      openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-
-      // Let GL know about our veritices
-      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
-      openGLContext.extensions.glEnableVertexAttribArray(0);
-
-      openGLContext.extensions.glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-      // Draw three verticies
-      glDrawArrays(GL_TRIANGLES, 0, 3);
-
-      openGLContext.extensions.glDisableVertexAttribArray(0);
+      openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     
     void FFTViewerComponent::initialise()
