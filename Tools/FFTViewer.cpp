@@ -2,6 +2,8 @@
  * \file FFTViewer.cpp
  */
 
+#include <JuceHeader.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <array>
@@ -28,6 +30,7 @@ namespace ATK
     FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface_)
     :interface_(interface_), amp_data(interface_->get_nb_channels()), amp_data_previous(interface_->get_nb_channels()), amp_data_log(interface_->get_nb_channels())
     {
+      openGLContext.setOpenGLVersionRequired(::juce::OpenGLContext::openGL3_2);
     }
     
     FFTViewerComponent::~FFTViewerComponent()
@@ -46,7 +49,7 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
-      transformationMatrix = glm::mat4x4(1.f);//glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.f, -10.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.f, -10.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     }
     
     void FFTViewerComponent::render()
@@ -54,15 +57,15 @@ namespace ATK
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear(getLookAndFeel().findColour(::juce::ResizableWindow::backgroundColourId));
 
-      glEnable (GL_BLEND);
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      //glEnable (GL_BLEND);
+      //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
-      glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
-      shader->use();
+      //glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
+      //shader->use();
 
-      MVP->setMatrix4(&transformationMatrix[0][0], 16, false);
+      //MVP->setMatrix4(&transformationMatrix[0][0], 16, false);
 
-      for(std::size_t index = 0; index < amp_data.size(); ++index)
+      /*for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
         bool process = true;
         const auto& data = interface_->get_last_slice(index, process);
@@ -101,30 +104,58 @@ namespace ATK
         
         if(amp_data_log[index].empty())
           return;
-      }
+      }*/
         //openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)), display_data.data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(position->attributeID);
+        //glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+        //glEnableVertexAttribArray(position->attributeID);
         //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
-        glVertexAttribPointer(
-                              position->attributeID,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-                              3,                  // size
-                              GL_FLOAT,           // type
-                              GL_FALSE,           // normalized?
-                              0,                  // stride
-                              (void*)0            // array buffer offset
-                              );
+        //glVertexAttribPointer(
+        //                      position->attributeID,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+        //                      3,                  // size
+        //                      GL_FLOAT,           // type
+        //                      GL_FALSE,           // normalized?
+        //                      0,                  // stride
+        //                      (void*)0            // array buffer offset
+        //                      );
         //openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
         //openGLContext.extensions.glEnableVertexAttribArray (position->attributeID);
         
-        glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
+        //glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
         
-        glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-        glDisableVertexAttribArray(position->attributeID);
+        //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        //glDisableVertexAttribArray(position->attributeID);
         //openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
       //}
-      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
+      //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
+
+      GLfloat verts[]
+      {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        0.0f,  1.0f, 0.0f
+      };
+
+      // An ID for your buffer
+      GLuint bufferID;
+
+      // Get the ID
+      openGLContext.extensions.glGenBuffers(1, &bufferID);
+
+      // Configure the buffer
+      openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+
+      // Let GL know about our veritices
+      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+      openGLContext.extensions.glEnableVertexAttribArray(0);
+
+      openGLContext.extensions.glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+      // Draw three verticies
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      openGLContext.extensions.glDisableVertexAttribArray(0);
     }
     
     void FFTViewerComponent::initialise()
@@ -140,25 +171,23 @@ namespace ATK
     void FFTViewerComponent::buildShaders()
     {
       std::string vertexShader =
-      "#version 120\n"
-      "attribute vec3 position;\n"
-      "\n"
-      "uniform mat4 MVP;\n"
-      "\n"
-      "void main()\n"
-      "{\n"
-      "  vec4 pos;\n"
-      "  pos.xyz = position;\n"
-      "  pos.w = 1;\n"
-      "  gl_Position = MVP * pos;\n"
-      "}\n";
-      
+        "attribute vec3 position;\n"
+        "\n"
+        "uniform mat4 MVP;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "  vec4 pos;\n"
+        "  pos.xyz = position;\n"
+        "  pos.w = 1;\n"
+        "  gl_Position = MVP * pos;\n"
+        "}\n";
+
       std::string fragmentShader =
-      "#version 120\n"
-      "void main()\n"
-      "{\n"
-      "  gl_FragColor = vec4(1,0,0,0);\n"
-      "}";
+        "void main()\n"
+        "{\n"
+        "  gl_FragColor = vec4(1,0,0,0);\n"
+        "}";
       
       std::unique_ptr<::juce::OpenGLShaderProgram> newShader(new ::juce::OpenGLShaderProgram (openGLContext));
       ::juce::String statusText;
