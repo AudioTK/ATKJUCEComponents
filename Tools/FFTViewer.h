@@ -46,10 +46,10 @@ namespace ATK
       
       std::vector<float> display_data;
       
-      glm::mat4x4 MVP;
-      GLuint matrixID;
+      glm::mat4x4 transformationMatrix;
       GLuint vertexArrayID;
       
+      std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
       std::unique_ptr<::juce::OpenGLShaderProgram> shader;
       std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;
     };

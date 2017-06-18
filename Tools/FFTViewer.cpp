@@ -13,6 +13,12 @@ namespace
 {
   const double min_value = -200;
   const double max_value = 0;
+  
+  static const GLfloat g_vertex_buffer_data[] = {
+    -1.0f, -1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    0.0f,  1.0f, 0.0f,
+  };
 }
 
 namespace ATK
@@ -40,8 +46,7 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
-      auto ratio = static_cast<float>(getWidth()) / getHeight();
-      MVP = glm::ortho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      transformationMatrix = glm::mat4x4(1.f);//glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.f, -10.f) *  glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     }
     
     void FFTViewerComponent::render()
@@ -49,11 +54,14 @@ namespace ATK
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear(getLookAndFeel().findColour(::juce::ResizableWindow::backgroundColourId));
 
+      glEnable (GL_BLEND);
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      
       glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
-      
-      glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
-      auto ratio = static_cast<float>(getWidth()) / getHeight();
-      
+      shader->use();
+
+      MVP->setMatrix4(&transformationMatrix[0][0], 16, false);
+
       for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
         bool process = true;
@@ -85,29 +93,37 @@ namespace ATK
           for(auto i = first_index; i <= last_index; ++i)
           {
             auto local_id = i - first_index;
-            display_data[local_id * 3] = ratio * (2 * i / (last_index - first_index - 1.f) - 1);
+            display_data[local_id * 3] = (2 * i / (last_index - first_index - 1.f) - 1);
             display_data[local_id * 3 + 1] = (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1);
-            display_data[local_id * 3 + 2] = index;
+            display_data[local_id * 3 + 2] = -index;
           }
         }
         
         if(amp_data_log[index].empty())
           return;
-        
-        openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
-                                               static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)),
-                                               display_data.data(), GL_STATIC_DRAW);
-        openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
-        
-        openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        openGLContext.extensions.glEnableVertexAttribArray (position->attributeID);
+      }
+        //openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)), display_data.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(position->attributeID);
+        //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
+        glVertexAttribPointer(
+                              position->attributeID,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+                              3,                  // size
+                              GL_FLOAT,           // type
+                              GL_FALSE,           // normalized?
+                              0,                  // stride
+                              (void*)0            // array buffer offset
+                              );
+        //openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        //openGLContext.extensions.glEnableVertexAttribArray (position->attributeID);
         
         glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
         
-        shader->use();
-        
-        openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
-      }
+        glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        glDisableVertexAttribArray(position->attributeID);
+        //openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
+      //}
       openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
     
@@ -131,19 +147,18 @@ namespace ATK
       "\n"
       "void main()\n"
       "{\n"
-      "    vec4 pos;\n"
-      "    pos.xyz = position;\n"
-      "    pos.w = 1;\n"
-      "    gl_Position = MVP * pos;\n"
+      "  vec4 pos;\n"
+      "  pos.xyz = position;\n"
+      "  pos.w = 1;\n"
+      "  gl_Position = MVP * pos;\n"
       "}\n";
       
       std::string fragmentShader =
-      "\n"
+      "#version 120\n"
       "void main()\n"
       "{\n"
-      "    vec4 colour = vec4(0.95, 0.57, 0.03, 0.7);\n"
-      "    gl_FragColor = colour;\n"
-      "}\n";
+      "  gl_FragColor = vec4(1,0,0,0);\n"
+      "}";
       
       std::unique_ptr<::juce::OpenGLShaderProgram> newShader(new ::juce::OpenGLShaderProgram (openGLContext));
       ::juce::String statusText;
@@ -162,14 +177,10 @@ namespace ATK
         statusText = newShader->getLastError();
       }
       
-      matrixID = glGetUniformLocation(shader->getProgramID(), "MVP");
+      MVP.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "MVP"));
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
       
       openGLContext.extensions.glGenBuffers (1, &vertexArrayID);
-      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
-      
-      //glGenVertexArrays(1, &vertexArrayID);
-      //glBindVertexArray(vertexArrayID);
     }
   }
 }
