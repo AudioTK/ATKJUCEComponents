@@ -57,13 +57,13 @@ namespace ATK
       const float desktopScale = (float) openGLContext.getRenderingScale();
       ::juce::OpenGLHelpers::clear(getLookAndFeel().findColour(::juce::ResizableWindow::backgroundColourId));
 
-      //glEnable (GL_BLEND);
-      //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable (GL_BLEND);
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
-      //glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
-      //shader->use();
+      glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
+      shader->use();
 
-      //MVP->setMatrix4(&transformationMatrix[0][0], 16, false);
+      MVP->setMatrix4(&transformationMatrix[0][0], 1, true);
 
       /*for(std::size_t index = 0; index < amp_data.size(); ++index)
       {
@@ -104,30 +104,18 @@ namespace ATK
         
         if(amp_data_log[index].empty())
           return;
-      }*/
-        //openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)), display_data.data(), GL_STATIC_DRAW);
-        //glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
-        //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-        //glEnableVertexAttribArray(position->attributeID);
-        //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
-        //glVertexAttribPointer(
-        //                      position->attributeID,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-        //                      3,                  // size
-        //                      GL_FLOAT,           // type
-        //                      GL_FALSE,           // normalized?
-        //                      0,                  // stride
-        //                      (void*)0            // array buffer offset
-        //                      );
-        //openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        //openGLContext.extensions.glEnableVertexAttribArray (position->attributeID);
+
+        openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
+        openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)), display_data.data(), GL_STATIC_DRAW);
+
+        openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
+        openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
         
-        //glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
+        glDrawElements (GL_LINE_SMOOTH, display_data.size() - 1, GL_UNSIGNED_INT, 0);
         
-        //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-        //glDisableVertexAttribArray(position->attributeID);
-        //openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
-      //}
-      //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
+        openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
+      }
+      openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);*/
 
       GLfloat verts[]
       {
@@ -186,7 +174,7 @@ namespace ATK
       std::string fragmentShader =
         "void main()\n"
         "{\n"
-        "  gl_FragColor = vec4(1,0,0,0);\n"
+        "  gl_FragColor = vec4(1,0,0,1);\n"
         "}";
       
       std::unique_ptr<::juce::OpenGLShaderProgram> newShader(new ::juce::OpenGLShaderProgram (openGLContext));
