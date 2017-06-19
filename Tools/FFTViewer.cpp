@@ -59,7 +59,9 @@ namespace ATK
 
       glEnable (GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
+
       glViewport (0, 0, ::juce::roundToInt (desktopScale * getWidth()), ::juce::roundToInt (desktopScale * getHeight()));
       shader->use();
 
@@ -115,12 +117,6 @@ namespace ATK
         
         openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
       }
-      GLfloat verts[]
-      {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f,  1.0f, 0.0f
-      };
 
       openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
