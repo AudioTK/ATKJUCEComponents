@@ -40,11 +40,26 @@ namespace ATK
     private:
       FFTViewerInterface* interface_;
       FFT<double> fft;
-      std::vector<std::vector<double>> amp_data;
-      std::vector<std::vector<double>> amp_data_previous;
-      std::vector<std::vector<double>> amp_data_log;
-      
-      std::vector<float> display_data;
+
+      class Component
+      {
+      public:
+        Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext);
+
+        void display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint vertexArrayID, GLuint positionID);
+
+      private:
+        FFT<double>& fft;
+        ::juce::OpenGLContext& openGLContext;
+        std::vector<double> amp_data;
+        std::vector<double> amp_data_previous;
+        std::vector<double> amp_data_log;
+
+        std::vector<float> display_data;
+
+      };
+
+      std::vector<Component> componentsData;
       
       glm::mat4x4 transformationMatrix;
       GLuint vertexArrayID;

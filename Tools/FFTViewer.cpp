@@ -28,8 +28,12 @@ namespace ATK
   namespace juce
   {
     FFTViewerComponent::FFTViewerComponent (FFTViewerInterface* interface_)
-    :interface_(interface_), amp_data(interface_->get_nb_channels()), amp_data_previous(interface_->get_nb_channels()), amp_data_log(interface_->get_nb_channels())
+    :interface_(interface_)
     {
+      for (std::size_t i = 0; i < interface_->get_nb_channels(); ++i)
+      {
+        componentsData.emplace_back(fft, openGLContext);
+      }
       openGLContext.setOpenGLVersionRequired(::juce::OpenGLContext::openGL3_2);
     }
     
@@ -67,55 +71,13 @@ namespace ATK
 
       MVP->setMatrix4(&transformationMatrix[0][0], 1, GL_FALSE);
 
-      for(std::size_t index = 0; index < amp_data.size(); ++index)
+      for(std::size_t index = 0; index < componentsData.size(); ++index)
       {
         bool process = true;
         const auto& data = interface_->get_last_slice(index, process);
         auto sampling_rate = interface_->get_sampling_rate();
-        auto slice_size = data.size();
-        
-        if((sampling_rate != 0) && process && (data.size() > 0))
-        {
-          double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
-          fft.set_size(slice_size);
-          fft.process(data.data(), slice_size);
-          fft.get_amp(amp_data[index]);
-          if(amp_data_previous[index].size() != amp_data[index].size())
-          {
-            amp_data_previous[index] = amp_data[index];
-            amp_data_log[index].resize(amp_data_previous[index].size());
-          }
-          for(std::size_t i = 0; i < amp_data[index].size(); ++i)
-          {
-            amp_data_previous[index][i] = std::max(amp_data[index][i], memory_rate * amp_data_previous[index][i]);
-            amp_data_log[index][i] = 10 * std::log(amp_data_previous[index][i]); // amp_data is power
-          }
-          
-          auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
-          auto last_index = std::lround(20000. * slice_size / sampling_rate);
-          display_data.resize((last_index - first_index + 1) * 3);
-          
-          for(auto i = first_index; i <= last_index; ++i)
-          {
-            auto local_id = i - first_index;
-            display_data[local_id * 3] = (2 * i / (last_index - first_index - 1.f) - 1);
-            display_data[local_id * 3 + 1] = (2 * (amp_data_log[index][i] - min_value) / (max_value - min_value + 1e-10) - 1);
-            display_data[local_id * 3 + 2] = index;
-          }
-        }
-        
-        if(display_data.size() == 0)
-          return;
 
-        openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexArrayID);
-        openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof (float)), display_data.data(), GL_STATIC_DRAW);
-
-        openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
-        openGLContext.extensions.glVertexAttribPointer (position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        
-        glDrawArrays (GL_LINE_STRIP, 0, (display_data.size()) / 3 - 1);
-        
-        openGLContext.extensions.glDisableVertexAttribArray (position->attributeID);
+        componentsData[index].display(data, index, sampling_rate, process, vertexArrayID, position->attributeID);
       }
 
       openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -173,6 +135,59 @@ namespace ATK
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
       
       openGLContext.extensions.glGenBuffers (1, &vertexArrayID);
+    }
+
+    FFTViewerComponent::Component::Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext)
+    :fft(fft), openGLContext(openGLContext)
+    {
+    }
+
+    void FFTViewerComponent::Component::display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint vertexArrayID, GLuint positionID)
+    {
+      auto slice_size = data.size();
+
+      if ((sampling_rate != 0) && process && (data.size() > 0))
+      {
+        double memory_rate = std::exp(-0.3 * data.size() / sampling_rate); // 300ms release time
+        fft.set_size(slice_size);
+        fft.process(data.data(), slice_size);
+        fft.get_amp(amp_data);
+        if (amp_data_previous.size() != amp_data.size())
+        {
+          amp_data_previous = amp_data;
+          amp_data_log.resize(amp_data_previous.size());
+        }
+        for (std::size_t i = 0; i < amp_data.size(); ++i)
+        {
+          amp_data_previous[i] = std::max(amp_data[i], memory_rate * amp_data_previous[i]);
+          amp_data_log[i] = 10 * std::log(amp_data_previous[i]); // amp_data is power
+        }
+
+        auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
+        auto last_index = std::lround(20000. * slice_size / sampling_rate);
+        display_data.resize((last_index - first_index + 1) * 3);
+
+        for (auto i = first_index; i <= last_index; ++i)
+        {
+          auto local_id = i - first_index;
+          display_data[local_id * 3] = (2 * i / (last_index - first_index - 1.f) - 1);
+          display_data[local_id * 3 + 1] = (2 * (amp_data_log[i] - min_value) / (max_value - min_value + 1e-10) - 1);
+          display_data[local_id * 3 + 2] = index;
+        }
+      }
+
+      if (display_data.size() == 0)
+        return;
+
+      openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
+      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof(float)), display_data.data(), GL_STATIC_DRAW);
+
+      openGLContext.extensions.glEnableVertexAttribArray(positionID);
+      openGLContext.extensions.glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+      glDrawArrays(GL_LINE_STRIP, 0, (display_data.size()) / 3 - 1);
+
+      openGLContext.extensions.glDisableVertexAttribArray(positionID);
     }
   }
 }
