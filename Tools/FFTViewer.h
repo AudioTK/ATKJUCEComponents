@@ -46,7 +46,10 @@ namespace ATK
       public:
         Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext);
 
-        void display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint vertexArrayID, GLuint positionID);
+        void initialize();
+        void shutdown();
+
+        void display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint positionID);
 
       private:
         FFT<double>& fft;
@@ -57,12 +60,12 @@ namespace ATK
 
         std::vector<float> display_data;
 
+        GLuint vertexArrayID;
       };
 
       std::vector<Component> componentsData;
       
       glm::mat4x4 transformationMatrix;
-      GLuint vertexArrayID;
       
       std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
       std::unique_ptr<::juce::OpenGLShaderProgram> shader;

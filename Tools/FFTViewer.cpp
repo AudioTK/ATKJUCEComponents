@@ -77,7 +77,7 @@ namespace ATK
         const auto& data = interface_->get_last_slice(index, process);
         auto sampling_rate = interface_->get_sampling_rate();
 
-        componentsData[index].display(data, index, sampling_rate, process, vertexArrayID, position->attributeID);
+        componentsData[index].display(data, index, sampling_rate, process, position->attributeID);
       }
 
       openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -86,11 +86,18 @@ namespace ATK
     void FFTViewerComponent::initialise()
     {
       buildShaders();
+      for (auto& component : componentsData)
+      {
+        component.initialize();
+      }
     }
 
     void FFTViewerComponent::shutdown()
     {
-      openGLContext.extensions.glDeleteBuffers (1, &vertexArrayID);
+      for (auto& component : componentsData)
+      {
+        component.shutdown();
+      }
     }
     
     void FFTViewerComponent::buildShaders()
@@ -133,8 +140,6 @@ namespace ATK
       
       MVP.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "MVP"));
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
-      
-      openGLContext.extensions.glGenBuffers (1, &vertexArrayID);
     }
 
     FFTViewerComponent::Component::Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext)
@@ -142,7 +147,17 @@ namespace ATK
     {
     }
 
-    void FFTViewerComponent::Component::display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint vertexArrayID, GLuint positionID)
+    void FFTViewerComponent::Component::initialize()
+    {
+      openGLContext.extensions.glGenBuffers(1, &vertexArrayID);
+    }
+
+    void FFTViewerComponent::Component::shutdown()
+    {
+      openGLContext.extensions.glDeleteBuffers(1, &vertexArrayID);
+    }
+
+    void FFTViewerComponent::Component::display(const std::vector<double>& data, int index, int sampling_rate, bool process,  GLuint positionID)
     {
       auto slice_size = data.size();
 
