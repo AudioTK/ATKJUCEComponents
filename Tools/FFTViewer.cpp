@@ -258,9 +258,12 @@ namespace ATK
           display_data[local_id * 3 + 2] = depth;
           for (std::size_t index = previous_index; index < cumulativeIndices[local_id]; ++index)
           {
-            display_data[local_id * 3 + 1] += (2 * (amp_data_log[first_index + index] - min_value) / (max_value - min_value + 1e-10) - 1);
+            display_data[local_id * 3 + 1] += (2 * (amp_data_log[index] - min_value) / (max_value - min_value + 1e-10) - 1);
           }
-          display_data[local_id * 3 + 1] /= cumulativeIndices[local_id] - previous_index;
+          if(cumulativeIndices[local_id] - previous_index)
+            display_data[local_id * 3 + 1] /= cumulativeIndices[local_id] - previous_index;
+          else
+            display_data[local_id * 3 + 1] = display_data[(local_id - 1) * 3 + 1];
           previous_index = cumulativeIndices[local_id];
         }
       }
