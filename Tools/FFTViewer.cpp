@@ -227,6 +227,10 @@ namespace ATK
         fft.set_size(slice_size);
         fft.process(data.data(), slice_size);
         fft.get_amp(amp_data);
+
+        auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
+        auto last_index = std::lround(20000. * slice_size / sampling_rate);
+
         if (amp_data_previous.size() != amp_data.size())
         {
           amp_data_previous = amp_data;
@@ -234,8 +238,7 @@ namespace ATK
 
           for (std::size_t i = 0; i < cumulativeIndices.size(); ++i)
           {
-          // make it log
-            cumulativeIndices[i] = std::lround((i + 1) / double(cumulativeIndices.size()) * (20000 - 20) * slice_size / sampling_rate);
+            cumulativeIndices[i] = std::pow(10, (i + 1) * 3. / (cumulativeIndices.size() - 1)) * (last_index - first_index) / 1000;
           }
         }
 
@@ -245,8 +248,6 @@ namespace ATK
           amp_data_log[i] = 10 * std::log(amp_data_previous[i]); // amp_data is power
         }
 
-        auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
-        auto last_index = std::lround(20000. * slice_size / sampling_rate);
         display_data.resize(cumulativeIndices.size() * 3);
 
         std::size_t previous_index = 0;
