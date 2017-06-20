@@ -162,13 +162,12 @@ namespace ATK
         grid_data[6 * i + 5] = 10;
       }
 
-      double abs_offset = std::log10(0.2);
+      double abs_offset = std::log10(2);
       for (long i = 0; i < 3; ++i)
       {
-        double offset = i * 2./3 - 1;
         for (long j = 0; j < 9; ++j)
         {
-          auto y = offset + 2. / 3 * (std::log10((j + 2) / 10.) - abs_offset);
+          auto y = 2. / 3 * (i + std::log10(j + 2) - abs_offset) - 1;
           grid_data[6 * (nb_10dB + i * 9 + j)] = y;
           grid_data[6 * (nb_10dB + i * 9 + j) + 1] = -1;
           grid_data[6 * (nb_10dB + i * 9 + j) + 2] = 10;
@@ -235,6 +234,7 @@ namespace ATK
 
           for (std::size_t i = 0; i < cumulativeIndices.size(); ++i)
           {
+          // make it log
             cumulativeIndices[i] = std::lround((i + 1) / double(cumulativeIndices.size()) * (20000 - 20) * slice_size / sampling_rate);
           }
         }
