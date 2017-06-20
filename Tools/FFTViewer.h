@@ -66,6 +66,7 @@ namespace ATK
         std::vector<double> amp_data_log;
 
         std::vector<float> display_data;
+        std::vector<float> temp_display_data;
         /// Cumulative indices for the display
         std::vector<std::size_t> cumulativeIndices;
 

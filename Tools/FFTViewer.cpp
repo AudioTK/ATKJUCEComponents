@@ -235,10 +235,10 @@ namespace ATK
         {
           amp_data_previous = amp_data;
           amp_data_log.resize(amp_data_previous.size());
-
+          
           for (std::size_t i = 0; i < cumulativeIndices.size(); ++i)
           {
-            cumulativeIndices[i] = std::pow(10, (i + 1) * 3. / (cumulativeIndices.size() - 1)) * (last_index - first_index) / 1000;
+            cumulativeIndices[i] = first_index + (20 * std::pow(10, i * 3. / (cumulativeIndices.size() - 1)) - 20) / (20000 - 20) * (last_index - first_index);
           }
         }
 
@@ -248,24 +248,33 @@ namespace ATK
           amp_data_log[i] = 10 * std::log(amp_data_previous[i]); // amp_data is power
         }
 
+        temp_display_data.resize(cumulativeIndices.size());
         display_data.resize(cumulativeIndices.size() * 3);
 
         std::size_t previous_index = 0;
         for (std::size_t local_id = 0; local_id < cumulativeIndices.size(); ++local_id)
         {
           display_data[local_id * 3] = (local_id * 2. / (cumulativeIndices.size() - 1)) - 1;
-          display_data[local_id * 3 + 1] = 0;
           display_data[local_id * 3 + 2] = depth;
+
+          temp_display_data[local_id] = 0;
           for (std::size_t index = previous_index; index < cumulativeIndices[local_id]; ++index)
           {
-            display_data[local_id * 3 + 1] += (2 * (amp_data_log[index] - min_value) / (max_value - min_value + 1e-10) - 1);
+            temp_display_data[local_id] += (2 * (amp_data_log[index] - min_value) / (max_value - min_value + 1e-10) - 1);
           }
           if(cumulativeIndices[local_id] - previous_index)
-            display_data[local_id * 3 + 1] /= cumulativeIndices[local_id] - previous_index;
+            temp_display_data[local_id] /= cumulativeIndices[local_id] - previous_index;
           else
-            display_data[local_id * 3 + 1] = display_data[(local_id - 1) * 3 + 1];
+            temp_display_data[local_id] = temp_display_data[local_id - 1];
+          
           previous_index = cumulativeIndices[local_id];
         }
+        display_data[1] = temp_display_data[0];
+        for(std::size_t index = 1; index < temp_display_data.size() - 1; ++index)
+        {
+          display_data[3 * index + 1] = (temp_display_data[index - 1] + temp_display_data[index] + temp_display_data[index + 1]) / 3;
+        }
+        display_data[3 * (display_data.size() - 1) + 1] = temp_display_data[display_data.size() - 1];
       }
 
       if (display_data.size() == 0)
