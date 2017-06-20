@@ -37,6 +37,8 @@ namespace ATK
       
       void buildShaders();
       
+      void display_grid();
+
     private:
       FFTViewerInterface* interface_;
       FFT<double> fft;
@@ -72,7 +74,9 @@ namespace ATK
       std::vector<Component> componentsData;
       
       glm::mat4x4 transformationMatrix;
-      
+      GLuint gridArrayID;
+      std::vector<float> grid_data;
+
       std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
       std::unique_ptr<::juce::OpenGLShaderProgram> shader;
       std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;

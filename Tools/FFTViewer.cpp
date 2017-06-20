@@ -15,12 +15,6 @@ namespace
 {
   const double min_value = -200;
   const double max_value = 0;
-  
-  static const GLfloat g_vertex_buffer_data[] = {
-    -1.0f, -1.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,
-    0.0f,  1.0f, 0.0f,
-  };
 }
 
 namespace ATK
@@ -76,6 +70,8 @@ namespace ATK
 
       MVP->setMatrix4(&transformationMatrix[0][0], 1, GL_FALSE);
 
+      display_grid();
+
       for(std::size_t index = 0; index < componentsData.size(); ++index)
       {
         bool process = true;
@@ -99,6 +95,7 @@ namespace ATK
 
     void FFTViewerComponent::shutdown()
     {
+      openGLContext.extensions.glDeleteBuffers(1, &gridArrayID);
       for (auto& component : componentsData)
       {
         component.shutdown();
@@ -146,6 +143,33 @@ namespace ATK
       transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 10.f, -10.f) *glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
       MVP.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "MVP"));
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
+
+      openGLContext.extensions.glGenBuffers(1, &gridArrayID);
+      auto nb_10dB = std::lround((max_value - min_value) / 10) + 1;
+      grid_data.resize(6 * nb_10dB);
+
+      for (long i = 0; i < nb_10dB; ++i)
+      {
+        grid_data[6 * i] = -1;
+        grid_data[6 * i + 1] = i * 2. / (nb_10dB - 1) - 1;
+        grid_data[6 * i + 2] = 10;
+        grid_data[6 * i + 3] = 1;
+        grid_data[6 * i + 4] = i * 2. / (nb_10dB - 1) - 1;
+        grid_data[6 * i + 5] = 10;
+      }
+    }
+
+    void FFTViewerComponent::display_grid()
+    {
+      openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, gridArrayID);
+      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (grid_data.size()) * sizeof(float)), grid_data.data(), GL_STATIC_DRAW);
+
+      openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
+      openGLContext.extensions.glVertexAttribPointer(position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+      glDrawArrays(GL_LINES, 0, grid_data.size() / 3);
+
+      openGLContext.extensions.glDisableVertexAttribArray(position->attributeID);
     }
 
     FFTViewerComponent::Component::Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext)
@@ -202,7 +226,7 @@ namespace ATK
         std::size_t previous_index = 0;
         for (std::size_t local_id = 0; local_id < cumulativeIndices.size(); ++local_id)
         {
-          display_data[local_id * 3] = (local_id * 2. / cumulativeIndices.size()) - 1;
+          display_data[local_id * 3] = (local_id * 2. / (cumulativeIndices.size() - 1)) - 1;
           display_data[local_id * 3 + 1] = 0;
           display_data[local_id * 3 + 2] = depth;
           for (std::size_t index = previous_index; index < cumulativeIndices[local_id]; ++index)
