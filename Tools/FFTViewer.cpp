@@ -53,7 +53,12 @@ namespace ATK
 
     void FFTViewerComponent::resized()
     {
-      transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 10.f, -10.f) *glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      auto width = getWidth();
+      for (auto& component : componentsData)
+      {
+        component.setSize(width);
+      }
+
     }
     
     void FFTViewerComponent::render()
@@ -138,6 +143,7 @@ namespace ATK
         statusText = newShader->getLastError();
       }
       
+      transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 10.f, -10.f) *glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
       MVP.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "MVP"));
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
     }
@@ -157,7 +163,12 @@ namespace ATK
       openGLContext.extensions.glDeleteBuffers(1, &vertexArrayID);
     }
 
-    void FFTViewerComponent::Component::display(const std::vector<double>& data, int index, int sampling_rate, bool process,  GLuint positionID)
+    void FFTViewerComponent::Component::setSize(std::size_t newSize)
+    {
+      cumulativeIndices.resize(newSize);
+    }
+
+    void FFTViewerComponent::Component::display(const std::vector<double>& data, int depth, int sampling_rate, bool process, GLuint positionID)
     {
       auto slice_size = data.size();
 
@@ -171,7 +182,13 @@ namespace ATK
         {
           amp_data_previous = amp_data;
           amp_data_log.resize(amp_data_previous.size());
+
+          for (std::size_t i = 0; i < cumulativeIndices.size(); ++i)
+          {
+            cumulativeIndices[i] = std::lround((i + 1) / double(cumulativeIndices.size()) * (20000 - 20) * slice_size / sampling_rate);
+          }
         }
+
         for (std::size_t i = 0; i < amp_data.size(); ++i)
         {
           amp_data_previous[i] = std::max(amp_data[i], memory_rate * amp_data_previous[i]);
@@ -180,14 +197,20 @@ namespace ATK
 
         auto first_index = std::lround(20. * slice_size / sampling_rate); //Only display between 20 and 20kHz
         auto last_index = std::lround(20000. * slice_size / sampling_rate);
-        display_data.resize((last_index - first_index + 1) * 3);
+        display_data.resize(cumulativeIndices.size() * 3);
 
-        for (auto i = first_index; i <= last_index; ++i)
+        std::size_t previous_index = 0;
+        for (std::size_t local_id = 0; local_id < cumulativeIndices.size(); ++local_id)
         {
-          auto local_id = i - first_index;
-          display_data[local_id * 3] = (2 * i / (last_index - first_index - 1.f) - 1);
-          display_data[local_id * 3 + 1] = (2 * (amp_data_log[i] - min_value) / (max_value - min_value + 1e-10) - 1);
-          display_data[local_id * 3 + 2] = index;
+          display_data[local_id * 3] = (local_id * 2. / cumulativeIndices.size()) - 1;
+          display_data[local_id * 3 + 1] = 0;
+          display_data[local_id * 3 + 2] = depth;
+          for (std::size_t index = previous_index; index < cumulativeIndices[local_id]; ++index)
+          {
+            display_data[local_id * 3 + 1] += (2 * (amp_data_log[first_index + index] - min_value) / (max_value - min_value + 1e-10) - 1);
+          }
+          display_data[local_id * 3 + 1] /= cumulativeIndices[local_id] - previous_index;
+          previous_index = cumulativeIndices[local_id];
         }
       }
 
@@ -200,7 +223,7 @@ namespace ATK
       openGLContext.extensions.glEnableVertexAttribArray(positionID);
       openGLContext.extensions.glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-      glDrawArrays(GL_LINE_STRIP, 0, (display_data.size()) / 3 - 1);
+      glDrawArrays(GL_LINE_STRIP, 0, (display_data.size() / 3) - 1);
 
       openGLContext.extensions.glDisableVertexAttribArray(positionID);
     }

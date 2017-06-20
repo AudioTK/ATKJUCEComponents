@@ -46,10 +46,14 @@ namespace ATK
       public:
         Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext);
 
+        /// Init GL ids
         void initialize();
+        /// Frees GL ids
         void shutdown();
-
-        void display(const std::vector<double>& data, int index, int sampling_rate, bool process, GLuint positionID);
+        /// Changes internal size, useful when the parent component is resized
+        void setSize(std::size_t newSize);
+        /// Displays data
+        void display(const std::vector<double>& data, int depth, int sampling_rate, bool process, GLuint positionID);
 
       private:
         FFT<double>& fft;
@@ -59,6 +63,8 @@ namespace ATK
         std::vector<double> amp_data_log;
 
         std::vector<float> display_data;
+        /// Cumulative indices for the display
+        std::vector<std::size_t> cumulativeIndices;
 
         GLuint vertexArrayID;
       };
