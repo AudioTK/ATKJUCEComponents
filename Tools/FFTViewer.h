@@ -36,7 +36,8 @@ namespace ATK
     protected:
       
       void buildShaders();
-      
+
+      void generate_grid();
       void display_grid();
 
     private:

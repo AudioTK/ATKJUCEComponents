@@ -52,7 +52,7 @@ namespace ATK
       {
         component.setSize(width);
       }
-
+      generate_grid();
     }
     
     void FFTViewerComponent::render()
@@ -71,7 +71,7 @@ namespace ATK
       MVP->setMatrix4(&transformationMatrix[0][0], 1, GL_FALSE);
 
       display_grid();
-
+      
       for(std::size_t index = 0; index < componentsData.size(); ++index)
       {
         bool process = true;
@@ -145,8 +145,12 @@ namespace ATK
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
 
       openGLContext.extensions.glGenBuffers(1, &gridArrayID);
+    }
+
+    void FFTViewerComponent::generate_grid()
+    {
       auto nb_10dB = std::lround((max_value - min_value) / 10) + 1;
-      grid_data.resize(6 * nb_10dB);
+      grid_data.resize(6 * (nb_10dB + 28));
 
       for (long i = 0; i < nb_10dB; ++i)
       {
@@ -157,6 +161,28 @@ namespace ATK
         grid_data[6 * i + 4] = i * 2. / (nb_10dB - 1) - 1;
         grid_data[6 * i + 5] = 10;
       }
+
+      double abs_offset = std::log10(0.2);
+      for (long i = 0; i < 3; ++i)
+      {
+        double offset = i * 2./3 - 1;
+        for (long j = 0; j < 9; ++j)
+        {
+          auto y = offset + 2. / 3 * (std::log10((j + 2) / 10.) - abs_offset);
+          grid_data[6 * (nb_10dB + i * 9 + j)] = y;
+          grid_data[6 * (nb_10dB + i * 9 + j) + 1] = -1;
+          grid_data[6 * (nb_10dB + i * 9 + j) + 2] = 10;
+          grid_data[6 * (nb_10dB + i * 9 + j) + 3] = y;
+          grid_data[6 * (nb_10dB + i * 9 + j) + 4] = 1;
+          grid_data[6 * (nb_10dB + i * 9 + j) + 5] = 10;
+        }
+      }
+      grid_data[6 * (nb_10dB + 27)] = 1;
+      grid_data[6 * (nb_10dB + 27) + 1] = -1;
+      grid_data[6 * (nb_10dB + 27) + 2] = 10;
+      grid_data[6 * (nb_10dB + 27) + 3] = 1;
+      grid_data[6 * (nb_10dB + 27) + 4] = 1;
+      grid_data[6 * (nb_10dB + 27) + 5] = 10;
     }
 
     void FFTViewerComponent::display_grid()
