@@ -35,15 +35,6 @@ namespace ATK
     {
       shutdownOpenGL();
     }
-    
-    void FFTViewerComponent::paint(::juce::Graphics& g)
-    {
-      g.setColour (getLookAndFeel().findColour (::juce::Label::textColourId));
-      g.setFont (20);
-      g.drawText ("OpenGL Example", 25, 20, 300, 30, ::juce::Justification::left);
-      g.drawLine (20, 20, 170, 20);
-      g.drawLine (20, 50, 170, 50);
-    }
 
     void FFTViewerComponent::resized()
     {

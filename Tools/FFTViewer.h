@@ -27,7 +27,6 @@ namespace ATK
       ~FFTViewerComponent();
       
       //==============================================================================
-      void paint(::juce::Graphics&) override;
       void resized() override;
       void render() override;
     
