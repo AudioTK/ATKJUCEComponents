@@ -15,6 +15,8 @@ namespace
 {
   const double min_value = -200;
   const double max_value = 0;
+
+  const float viewColors[] = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f};
 }
 
 namespace ATK
@@ -70,7 +72,7 @@ namespace ATK
         const auto& data = interface_->get_last_slice(index, process);
         auto sampling_rate = interface_->get_sampling_rate();
 
-        color->set(.9f, 0.f, 0.f, .9f);
+        color->set(viewColors[3 * index], viewColors[3 * index + 1], viewColors[3 * index + 2], .9f);
 
         componentsData[index].display(data, index, sampling_rate, process, position->attributeID);
       }
