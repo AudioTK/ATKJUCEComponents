@@ -57,6 +57,8 @@ namespace ATK
         /// Displays data
         void display(const std::vector<double>& data, int depth, int sampling_rate, bool process, GLuint positionID);
 
+        void smooth_display();
+
       private:
         FFT<double>& fft;
         ::juce::OpenGLContext& openGLContext;
@@ -79,6 +81,7 @@ namespace ATK
       std::vector<float> grid_data;
 
       std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
+      std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> color;
       std::unique_ptr<::juce::OpenGLShaderProgram> shader;
       std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;
     };

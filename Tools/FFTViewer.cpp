@@ -63,11 +63,14 @@ namespace ATK
 
       display_grid();
       
+      glLineWidth(2);
       for(std::size_t index = 0; index < componentsData.size(); ++index)
       {
         bool process = true;
         const auto& data = interface_->get_last_slice(index, process);
         auto sampling_rate = interface_->get_sampling_rate();
+
+        color->set(.9f, 0.f, 0.f, .9f);
 
         componentsData[index].display(data, index, sampling_rate, process, position->attributeID);
       }
@@ -109,9 +112,10 @@ namespace ATK
         "}\n";
 
       std::string fragmentShader =
+        "uniform vec4 color;\n"
         "void main()\n"
         "{\n"
-        "  gl_FragColor = vec4(1,0,0,1);\n"
+        "  gl_FragColor = color;\n"
         "}";
       
       std::unique_ptr<::juce::OpenGLShaderProgram> newShader(new ::juce::OpenGLShaderProgram (openGLContext));
@@ -133,6 +137,7 @@ namespace ATK
       
       transformationMatrix = glm::ortho(-1.f, 1.f, -1.f, 1.f, 10.f, -10.f) *glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
       MVP.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "MVP"));
+      color.reset(new ::juce::OpenGLShaderProgram::Uniform(*shader, "color"));
       position.reset(new ::juce::OpenGLShaderProgram::Attribute(*shader, "position"));
 
       openGLContext.extensions.glGenBuffers(1, &gridArrayID);
@@ -183,6 +188,9 @@ namespace ATK
       openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
       openGLContext.extensions.glVertexAttribPointer(position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+      glLineWidth(1);
+      color->set(.9f, .9f, .9f, .5f);
+
       glDrawArrays(GL_LINES, 0, grid_data.size() / 3);
 
       openGLContext.extensions.glDisableVertexAttribArray(position->attributeID);
@@ -206,6 +214,20 @@ namespace ATK
     void FFTViewerComponent::Component::setSize(std::size_t newSize)
     {
       cumulativeIndices.resize(newSize);
+    }
+
+    void FFTViewerComponent::Component::smooth_display()
+    {
+      for (std::size_t index = 0; index < temp_display_data.size(); ++index)
+      {
+        temp_display_data[index] = display_data[3 * index + 1];
+      }
+      display_data[1] = temp_display_data[0];
+      for (std::size_t index = 1; index < temp_display_data.size() - 1; ++index)
+      {
+        display_data[3 * index + 1] = (temp_display_data[index - 1] + temp_display_data[index] + temp_display_data[index + 1]) / 3;
+      }
+      display_data[3 * (temp_display_data.size() - 1) + 1] = temp_display_data[temp_display_data.size() - 1];
     }
 
     void FFTViewerComponent::Component::display(const std::vector<double>& data, int depth, int sampling_rate, bool process, GLuint positionID)
@@ -248,24 +270,21 @@ namespace ATK
           display_data[local_id * 3] = (local_id * 2. / (cumulativeIndices.size() - 1)) - 1;
           display_data[local_id * 3 + 2] = depth;
 
-          temp_display_data[local_id] = 0;
+          display_data[local_id * 3 + 1] = 0;
           for (std::size_t index = previous_index; index < cumulativeIndices[local_id]; ++index)
           {
-            temp_display_data[local_id] += (2 * (amp_data_log[index] - min_value) / (max_value - min_value + 1e-10) - 1);
+            display_data[local_id * 3 + 1] += (2 * (amp_data_log[index] - min_value) / (max_value - min_value + 1e-10) - 1);
           }
           if(cumulativeIndices[local_id] - previous_index)
-            temp_display_data[local_id] /= cumulativeIndices[local_id] - previous_index;
+            display_data[local_id * 3 + 1] /= cumulativeIndices[local_id] - previous_index;
           else
-            temp_display_data[local_id] = temp_display_data[local_id - 1];
+            display_data[local_id * 3 + 1] = display_data[(local_id - 1) * 3 + 1];
           
           previous_index = cumulativeIndices[local_id];
         }
-        display_data[1] = temp_display_data[0];
-        for(std::size_t index = 1; index < temp_display_data.size() - 1; ++index)
-        {
-          display_data[3 * index + 1] = (temp_display_data[index - 1] + temp_display_data[index] + temp_display_data[index + 1]) / 3;
-        }
-        display_data[3 * (display_data.size() - 1) + 1] = temp_display_data[display_data.size() - 1];
+
+        smooth_display();
+        smooth_display();
       }
 
       if (display_data.size() == 0)
