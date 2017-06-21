@@ -183,7 +183,7 @@ namespace ATK
     void FFTViewerComponent::display_grid()
     {
       openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, gridArrayID);
-      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (grid_data.size()) * sizeof(float)), grid_data.data(), GL_STATIC_DRAW);
+      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(grid_data.size() * sizeof(float)), grid_data.data(), GL_STATIC_DRAW);
 
       openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
       openGLContext.extensions.glVertexAttribPointer(position->attributeID, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -291,7 +291,7 @@ namespace ATK
         return;
 
       openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexArrayID);
-      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr> (static_cast<size_t> (display_data.size()) * sizeof(float)), display_data.data(), GL_STATIC_DRAW);
+      openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(display_data.size() * sizeof(float)), display_data.data(), GL_STATIC_DRAW);
 
       openGLContext.extensions.glEnableVertexAttribArray(positionID);
       openGLContext.extensions.glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
