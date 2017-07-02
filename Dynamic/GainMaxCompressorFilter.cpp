@@ -43,7 +43,6 @@ namespace ATK
       softnessLabel.setText("Softness", ::juce::NotificationType::dontSendNotification);
       softnessLabel.setJustificationType(::juce::Justification::centred);
 
-      
       addAndMakeVisible(reducSlider);
       reducAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment (paramState, reducName, reducSlider));
       reducSlider.setTextValueSuffix(" dB");

@@ -31,6 +31,8 @@ namespace ATK
         componentsData.emplace_back(fft, openGLContext);
       }
       openGLContext.setOpenGLVersionRequired(::juce::OpenGLContext::openGL3_2);
+      openGLContext.setContinuousRepainting(true);
+      openGLContext.setSwapInterval(1);
     }
     
     FFTViewerComponent::~FFTViewerComponent()
