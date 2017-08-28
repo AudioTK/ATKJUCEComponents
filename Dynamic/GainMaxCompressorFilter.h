@@ -42,8 +42,6 @@ namespace ATK
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> ratioAtt;
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> softnessAtt;
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> reducAtt;
-
-      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainMaxCompressorFilterComponent)
     };
   }
 }

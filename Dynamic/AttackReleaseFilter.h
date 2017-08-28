@@ -36,8 +36,6 @@ namespace ATK
       
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> attackAtt;
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> releaseAtt;
-
-      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AttackReleaseFilterComponent)
     };
   }
 }
