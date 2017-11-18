@@ -33,8 +33,6 @@ namespace ATK
       ::juce::Colour color;
       
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> drywetAtt;
-
-      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DryWetFilterComponent)
     };
   }
 }
