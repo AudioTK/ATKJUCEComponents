@@ -17,7 +17,7 @@ namespace ATK
     class DryWetFilterComponent  : public ::juce::Component
     {
     public:
-      DryWetFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name);
+      DryWetFilterComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display="Dry/Wet");
       ~DryWetFilterComponent();
       
       //==============================================================================

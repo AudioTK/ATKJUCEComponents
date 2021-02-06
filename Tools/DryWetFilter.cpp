@@ -10,7 +10,7 @@ namespace ATK
 {
   namespace juce
   {
-    DryWetFilterComponent::DryWetFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name)
+    DryWetFilterComponent::DryWetFilterComponent (::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display)
     : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow), color(::juce::Colour(46, 46, 46))
     {
       addAndMakeVisible(levelSlider);
@@ -20,7 +20,7 @@ namespace ATK
       levelSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
       
       addAndMakeVisible(levelLabel);
-      levelLabel.setText("Dry/Wet", ::juce::NotificationType::dontSendNotification);
+      levelLabel.setText(display, ::juce::NotificationType::dontSendNotification);
       levelLabel.setJustificationType(::juce::Justification::centred);
       
       // Make sure that before the constructor has finished, you've set the
