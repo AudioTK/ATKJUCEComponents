@@ -42,8 +42,6 @@ namespace ATK
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> bassAtt;
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> mediumAtt;
       std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> highAtt;
-      
-      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ToneStackFilterComponent)
     };
 
   }
