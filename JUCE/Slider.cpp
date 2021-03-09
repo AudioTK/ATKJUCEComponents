@@ -10,13 +10,12 @@ namespace ATK
 {
 namespace juce
 {
-Slider::Slider(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display)
+SliderComponent::SliderComponent(::juce::AudioProcessorValueTreeState& paramState, const std::string& name, const std::string& display)
   : levelSlider(::juce::Slider::SliderStyle::Rotary, ::juce::Slider::TextEntryBoxPosition::TextBoxBelow)
   , color(::juce::Colour(36, 36, 36))
 {
   addAndMakeVisible(levelSlider);
   sliderAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment(paramState, name, levelSlider));
-  levelSlider.setTextValueSuffix(sliderAtt->getTextValueSuffix());
   levelSlider.setColour(::juce::Slider::rotarySliderFillColourId, ::juce::Colours::orange);
   levelSlider.setLookAndFeel(&ImageLookAndFeel::get_instance());
 
@@ -29,15 +28,15 @@ Slider::Slider(::juce::AudioProcessorValueTreeState& paramState, const std::stri
   setSize(150, 150);
 }
 
-Slider::~Slider() = default;
+SliderComponent::~SliderComponent() = default;
 
-void Slider::paint(::juce::Graphics& g)
+void SliderComponent::paint(::juce::Graphics& g)
 {
   g.setColour(color);
   g.fillRoundedRectangle(5, 5, getWidth() - 10, getHeight() - 10, 10);
 }
 
-void Slider::resized()
+void SliderComponent::resized()
 {
   levelLabel.setBoundsRelative(0, 0.05, 1, 0.1);
   levelSlider.setBoundsRelative(0.1, 0.2, 0.8, 0.7);
