@@ -10,7 +10,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
-#include <ATK/Tools/VolumeFilter.h>
+#include "ImageLookAndFeel.h"
 
 namespace ATK
 {
@@ -21,7 +21,8 @@ class SliderComponent: public ::juce::Component
 public:
   SliderComponent(::juce::AudioProcessorValueTreeState& paramState,
       const std::string& name,
-      const std::string& display);
+      const std::string& display,
+      ImageLookAndFeel* laf);
   ~SliderComponent();
 
   //==============================================================================
@@ -31,8 +32,6 @@ public:
 
 private:
   ::juce::Slider levelSlider;
-  ::juce::Label levelLabel;
-  ::juce::Colour color;
 
   std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> sliderAtt;
 };
