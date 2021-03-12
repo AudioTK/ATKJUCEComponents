@@ -5,8 +5,6 @@
 #ifndef ATKJUCECOMPONENTS_JUCE_IMAGELOOKANDFEEL
 #define ATKJUCECOMPONENTS_JUCE_IMAGELOOKANDFEEL
 
-#include <AppConfig.h>
-
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_graphics/juce_graphics.h>
 

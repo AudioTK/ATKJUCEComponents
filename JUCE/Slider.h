@@ -5,8 +5,6 @@
 #ifndef ATKJUCECOMPONENTS_JUCE_SLIDER
 #define ATKJUCECOMPONENTS_JUCE_SLIDER
 
-#include <AppConfig.h>
-
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
