@@ -5,8 +5,6 @@
 #ifndef ATKJUCECOMPONENTS_JUCE_LOOKANDFEEL
 #define ATKJUCECOMPONENTS_JUCE_LOOKANDFEEL
 
-#include <AppConfig.h>
-
 #include <juce_gui_basics/juce_gui_basics.h>
 
 namespace ATK

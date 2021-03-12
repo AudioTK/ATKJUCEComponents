@@ -5,8 +5,6 @@
 #ifndef ATKJUCECOMPONENTS_TOOLS_VOLUMEFILTER
 #define ATKJUCECOMPONENTS_TOOLS_VOLUMEFILTER
 
-#include <AppConfig.h>
-
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
