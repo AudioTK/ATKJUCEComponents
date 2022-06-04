@@ -12,10 +12,13 @@ namespace juce
 {
 SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
     ::juce::AudioProcessorValueTreeState& paramState,
-    const std::string& delayName, const std::string& blendName,
-    const std::string& feedbackName, const std::string& feedforwardName)
-    : delaySlider(::juce::Slider::SliderStyle::Rotary,
-                  ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
+    const std::string& delayNumName, const std::string& delayDenomName,
+    const std::string& blendName, const std::string& feedbackName,
+    const std::string& feedforwardName)
+    : delayNumSlider(::juce::Slider::SliderStyle::Rotary,
+                     ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
+      delayDenomSlider(::juce::Slider::SliderStyle::Rotary,
+                       ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       blendSlider(::juce::Slider::SliderStyle::Rotary,
                   ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       feedbackSlider(::juce::Slider::SliderStyle::Rotary,
@@ -24,17 +27,29 @@ SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
                         ::juce::Slider::TextEntryBoxPosition::TextBoxBelow),
       color(::juce::Colour(10, 10, 10))
 {
-    addAndMakeVisible(delaySlider);
-    delayAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment(
-        paramState, delayName, delaySlider));
-    delaySlider.setTextValueSuffix(" ms");
-    delaySlider.setColour(::juce::Slider::rotarySliderFillColourId,
-                          ::juce::Colours::aliceblue);
-    delaySlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+    addAndMakeVisible(delayNumSlider);
+    delayNumAtt.reset(
+        new ::juce::AudioProcessorValueTreeState::SliderAttachment(
+            paramState, delayNumName, delayNumSlider));
+    delayNumSlider.setColour(::juce::Slider::rotarySliderFillColourId,
+                             ::juce::Colours::aliceblue);
+    delayNumSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+    addAndMakeVisible(delayDenomSlider);
+    delayDenomAtt.reset(
+        new ::juce::AudioProcessorValueTreeState::SliderAttachment(
+            paramState, delayDenomName, delayDenomSlider));
+    delayDenomSlider.setColour(::juce::Slider::rotarySliderFillColourId,
+                               ::juce::Colours::aliceblue);
+    delayDenomSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
 
-    addAndMakeVisible(delayLabel);
-    delayLabel.setText("Delay", ::juce::NotificationType::dontSendNotification);
-    delayLabel.setJustificationType(::juce::Justification::centred);
+    addAndMakeVisible(delayNumLabel);
+    delayNumLabel.setText("Delay Num",
+                          ::juce::NotificationType::dontSendNotification);
+    delayNumLabel.setJustificationType(::juce::Justification::centred);
+    addAndMakeVisible(delayDenomLabel);
+    delayDenomLabel.setText("Delay Denom",
+                            ::juce::NotificationType::dontSendNotification);
+    delayDenomLabel.setJustificationType(::juce::Justification::centred);
 
     addAndMakeVisible(blendSlider);
     blendAtt.reset(new ::juce::AudioProcessorValueTreeState::SliderAttachment(
@@ -77,10 +92,11 @@ SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(450, 150);
+    setSize(550, 150);
 }
 
-SyncUniversalFixedDelayFilterComponent::~SyncUniversalFixedDelayFilterComponent() = default;
+SyncUniversalFixedDelayFilterComponent::
+    ~SyncUniversalFixedDelayFilterComponent() = default;
 
 void SyncUniversalFixedDelayFilterComponent::paint(::juce::Graphics& g)
 {
@@ -90,14 +106,16 @@ void SyncUniversalFixedDelayFilterComponent::paint(::juce::Graphics& g)
 
 void SyncUniversalFixedDelayFilterComponent::resized()
 {
-    delayLabel.setBoundsRelative(0.1 / 4, 0.05, 0.8 / 4, 0.1);
-    delaySlider.setBoundsRelative(0.1 / 4, 0.2, 0.8 / 4, 0.7);
-    blendLabel.setBoundsRelative(1.1 / 4, 0.05, 0.8 / 4, 0.1);
-    blendSlider.setBoundsRelative(1.1 / 4, 0.2, 0.8 / 4, 0.7);
-    feedbackLabel.setBoundsRelative(2.1 / 4, 0.05, 0.8 / 4, 0.1);
-    feedbackSlider.setBoundsRelative(2.1 / 4, 0.2, 0.8 / 4, 0.7);
-    feedforwardLabel.setBoundsRelative(3.1 / 4, 0.05, 0.8 / 4, 0.1);
-    feedforwardSlider.setBoundsRelative(3.1 / 4, 0.2, 0.8 / 4, 0.7);
+    delayNumLabel.setBoundsRelative(0.1 / 5, 0.05, 0.8 / 5, 0.1);
+    delayNumSlider.setBoundsRelative(0.1 / 5, 0.2, 0.8 / 5, 0.7);
+    delayDenomLabel.setBoundsRelative(1.1 / 5, 0.05, 0.8 / 5, 0.1);
+    delayDenomSlider.setBoundsRelative(1.1 / 5, 0.2, 0.8 / 5, 0.7);
+    blendLabel.setBoundsRelative(2.1 / 5, 0.05, 0.8 / 5, 0.1);
+    blendSlider.setBoundsRelative(2.1 / 5, 0.2, 0.8 / 5, 0.7);
+    feedbackLabel.setBoundsRelative(3.1 / 5, 0.05, 0.8 / 5, 0.1);
+    feedbackSlider.setBoundsRelative(3.1 / 5, 0.2, 0.8 / 5, 0.7);
+    feedforwardLabel.setBoundsRelative(4.1 / 5, 0.05, 0.8 / 5, 0.1);
+    feedforwardSlider.setBoundsRelative(4.1 / 5, 0.2, 0.8 / 5, 0.7);
 }
 } // namespace juce
 } // namespace ATK

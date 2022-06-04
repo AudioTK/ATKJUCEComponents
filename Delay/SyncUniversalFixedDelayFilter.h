@@ -17,8 +17,9 @@ class SyncUniversalFixedDelayFilterComponent : public ::juce::Component
   public:
     SyncUniversalFixedDelayFilterComponent(
         ::juce::AudioProcessorValueTreeState& paramState,
-        const std::string& delayName, const std::string& blendName,
-        const std::string& feedbackName, const std::string& feedforwardName);
+        const std::string& delayNumName, const std::string& delayDenomName,
+        const std::string& blendName, const std::string& feedbackName,
+        const std::string& feedforwardName);
     ~SyncUniversalFixedDelayFilterComponent();
 
     //==============================================================================
@@ -27,18 +28,22 @@ class SyncUniversalFixedDelayFilterComponent : public ::juce::Component
     void set_color(::juce::Colour color);
 
   private:
-    ::juce::Slider delaySlider;
+    ::juce::Slider delayNumSlider;
+    ::juce::Slider delayDenomSlider;
     ::juce::Slider blendSlider;
     ::juce::Slider feedbackSlider;
     ::juce::Slider feedforwardSlider;
-    ::juce::Label delayLabel;
+    ::juce::Label delayNumLabel;
+    ::juce::Label delayDenomLabel;
     ::juce::Label blendLabel;
     ::juce::Label feedbackLabel;
     ::juce::Label feedforwardLabel;
     ::juce::Colour color;
 
     std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment>
-        delayAtt;
+        delayNumAtt;
+    std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment>
+        delayDenomAtt;
     std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment>
         blendAtt;
     std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment>
