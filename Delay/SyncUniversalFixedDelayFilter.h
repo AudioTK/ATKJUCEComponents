@@ -1,11 +1,9 @@
 /**
- * \file UniversalFixedDelayFilter.h
+ * \file SyncUniversalFixedDelayFilter.h
  */
 
-#ifndef ATKJUCECOMPONENTS_DELAY_UNIVERSALFIXEDDELAYFILTER
-#define ATKJUCECOMPONENTS_DELAY_UNIVERSALFIXEDDELAYFILTER
-
-#include <AppConfig.h>
+#ifndef ATKJUCECOMPONENTS_DELAY_SYNCUNIVERSALFIXEDDELAYFILTER
+#define ATKJUCECOMPONENTS_DELAY_SYNCUNIVERSALFIXEDDELAYFILTER
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
@@ -14,14 +12,14 @@ namespace ATK
 {
 namespace juce
 {
-class UniversalFixedDelayFilterComponent : public ::juce::Component
+class SyncUniversalFixedDelayFilterComponent : public ::juce::Component
 {
   public:
-    UniversalFixedDelayFilterComponent(
+    SyncUniversalFixedDelayFilterComponent(
         ::juce::AudioProcessorValueTreeState& paramState,
         const std::string& delayName, const std::string& blendName,
         const std::string& feedbackName, const std::string& feedforwardName);
-    ~UniversalFixedDelayFilterComponent();
+    ~SyncUniversalFixedDelayFilterComponent();
 
     //==============================================================================
     void paint(::juce::Graphics&) override;

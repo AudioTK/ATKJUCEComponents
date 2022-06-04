@@ -1,8 +1,8 @@
 /**
- * \file UniversalDelayFilter.cpp
+ * \file SyncUniversalFixedDelayFilter.cpp
  */
 
-#include "UniversalFixedDelayFilter.h"
+#include "SyncUniversalFixedDelayFilter.h"
 
 #include "../JUCE/LookAndFeel.h"
 
@@ -10,7 +10,7 @@ namespace ATK
 {
 namespace juce
 {
-UniversalFixedDelayFilterComponent::UniversalFixedDelayFilterComponent(
+SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
     ::juce::AudioProcessorValueTreeState& paramState,
     const std::string& delayName, const std::string& blendName,
     const std::string& feedbackName, const std::string& feedforwardName)
@@ -80,15 +80,15 @@ UniversalFixedDelayFilterComponent::UniversalFixedDelayFilterComponent(
     setSize(450, 150);
 }
 
-UniversalFixedDelayFilterComponent::~UniversalFixedDelayFilterComponent() {}
+SyncUniversalFixedDelayFilterComponent::~SyncUniversalFixedDelayFilterComponent() = default;
 
-void UniversalFixedDelayFilterComponent::paint(::juce::Graphics& g)
+void SyncUniversalFixedDelayFilterComponent::paint(::juce::Graphics& g)
 {
     g.setColour(color);
     g.fillRoundedRectangle(5, 5, getWidth() - 10, getHeight() - 10, 10);
 }
 
-void UniversalFixedDelayFilterComponent::resized()
+void SyncUniversalFixedDelayFilterComponent::resized()
 {
     delayLabel.setBoundsRelative(0.1 / 4, 0.05, 0.8 / 4, 0.1);
     delaySlider.setBoundsRelative(0.1 / 4, 0.2, 0.8 / 4, 0.7);

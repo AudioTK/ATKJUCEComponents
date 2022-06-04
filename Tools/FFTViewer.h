@@ -17,34 +17,34 @@
 
 namespace ATK
 {
-  namespace juce
-  {
-    class FFTViewerInterface;
-    class FFTViewerComponent  : public ::juce::OpenGLAppComponent
+namespace juce
+{
+class FFTViewerInterface;
+class FFTViewerComponent : public ::juce::OpenGLAppComponent
+{
+  public:
+    FFTViewerComponent(FFTViewerInterface* interface_);
+    ~FFTViewerComponent();
+
+    //==============================================================================
+    void resized() override;
+    void render() override;
+
+    void initialise() override;
+    void shutdown() override;
+
+  protected:
+    void buildShaders();
+
+    void generate_grid();
+    void display_grid();
+
+  private:
+    FFTViewerInterface* interface_;
+    FFT<double> fft;
+
+    class Component
     {
-    public:
-      FFTViewerComponent(FFTViewerInterface* interface_);
-      ~FFTViewerComponent();
-      
-      //==============================================================================
-      void resized() override;
-      void render() override;
-    
-      void initialise() override;
-      void shutdown() override;
-    protected:
-      
-      void buildShaders();
-
-      void generate_grid();
-      void display_grid();
-
-    private:
-      FFTViewerInterface* interface_;
-      FFT<double> fft;
-
-      class Component
-      {
       public:
         Component(FFT<double>& fft, ::juce::OpenGLContext& openGLContext);
 
@@ -55,7 +55,8 @@ namespace ATK
         /// Changes internal size, useful when the parent component is resized
         void setSize(std::size_t newSize);
         /// Displays data
-        void display(const std::vector<double>& data, int depth, int sampling_rate, bool process, GLuint positionID);
+        void display(const std::vector<double>& data, int depth,
+                     int sampling_rate, bool process, GLuint positionID);
 
         void smooth_display();
 
@@ -72,20 +73,20 @@ namespace ATK
         std::vector<std::size_t> cumulativeIndices;
 
         GLuint vertexArrayID;
-      };
-
-      std::vector<Component> componentsData;
-      
-      glm::mat4x4 transformationMatrix;
-      GLuint gridArrayID;
-      std::vector<float> grid_data;
-
-      std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
-      std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> color;
-      std::unique_ptr<::juce::OpenGLShaderProgram> shader;
-      std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;
     };
-  }
-}
+
+    std::vector<Component> componentsData;
+
+    glm::mat4x4 transformationMatrix;
+    GLuint gridArrayID;
+    std::vector<float> grid_data;
+
+    std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> MVP;
+    std::unique_ptr<::juce::OpenGLShaderProgram::Uniform> color;
+    std::unique_ptr<::juce::OpenGLShaderProgram> shader;
+    std::unique_ptr<::juce::OpenGLShaderProgram::Attribute> position;
+};
+} // namespace juce
+} // namespace ATK
 
 #endif

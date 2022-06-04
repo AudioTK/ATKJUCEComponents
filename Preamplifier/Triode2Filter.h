@@ -7,10 +7,10 @@
 
 namespace ATK
 {
-  namespace juce
-  {
-    
-  }
+namespace juce
+{
+
 }
+} // namespace ATK
 
 #endif

@@ -14,24 +14,24 @@ namespace ATK
 {
 namespace juce
 {
-class SliderComponent: public ::juce::Component
+class SliderComponent : public ::juce::Component
 {
-public:
-  SliderComponent(::juce::AudioProcessorValueTreeState& paramState,
-      const std::string& name,
-      const std::string& display,
-      ImageLookAndFeel* laf);
-  ~SliderComponent();
+  public:
+    SliderComponent(::juce::AudioProcessorValueTreeState& paramState,
+                    const std::string& name, const std::string& display,
+                    ImageLookAndFeel* laf);
+    ~SliderComponent();
 
-  //==============================================================================
-  void paint(::juce::Graphics&) override;
-  void resized() override;
-  void set_color(::juce::Colour color);
+    //==============================================================================
+    void paint(::juce::Graphics&) override;
+    void resized() override;
+    void set_color(::juce::Colour color);
 
-private:
-  ::juce::Slider levelSlider;
+  private:
+    ::juce::Slider levelSlider;
 
-  std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment> sliderAtt;
+    std::unique_ptr<::juce::AudioProcessorValueTreeState::SliderAttachment>
+        sliderAtt;
 };
 } // namespace juce
 } // namespace ATK
