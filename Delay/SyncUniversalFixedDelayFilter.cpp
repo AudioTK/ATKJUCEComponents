@@ -69,7 +69,7 @@ SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
     feedbackSlider.setTextValueSuffix("");
     feedbackSlider.setColour(::juce::Slider::rotarySliderFillColourId,
                              ::juce::Colours::cornflowerblue);
-    feedbackSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+    feedbackSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
 
     addAndMakeVisible(feedbackLabel);
     feedbackLabel.setText("Feedback",
@@ -83,7 +83,7 @@ SyncUniversalFixedDelayFilterComponent::SyncUniversalFixedDelayFilterComponent(
     feedforwardSlider.setTextValueSuffix("");
     feedforwardSlider.setColour(::juce::Slider::rotarySliderFillColourId,
                                 ::juce::Colours::deepskyblue);
-    feedforwardSlider.setLookAndFeel(&SimpleSliderLookAndFeel::get_instance());
+    feedforwardSlider.setLookAndFeel(&DualSliderLookAndFeel::get_instance());
 
     addAndMakeVisible(feedforwardLabel);
     feedforwardLabel.setText("Feedforward",
